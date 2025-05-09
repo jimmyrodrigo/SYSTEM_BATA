@@ -1,0 +1,64 @@
+{% extends 'inventario/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Editar Producto{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow space-y-6">
+
+    <h2 class="text-2xl font-bold text-yellow-600">✏️ Editar Producto</h2>
+
+    {% if form.non_field_errors %}
+    <div class="bg-red-100 text-red-700 p-4 rounded mb-4">
+        <ul>
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'editar_producto' producto.id %}" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% csrf_token %}
+
+        <div>
+            <label for="id_categoria" class="block text-sm font-medium text-gray-600">Categoría:</label>
+            <select name="categoria" id="id_categoria" class="border rounded px-2 py-1 w-full">
+                {% for cat in form.fields.categoria.queryset %}
+                <option value="{{ cat.id }}" {% if form.instance.categoria.id == cat.id %}selected{% endif %}>{{ cat.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="id_subcategoria" class="block text-sm font-medium text-gray-600">Subcategoría:</label>
+            <select name="subcategoria" id="id_subcategoria" class="border rounded px-2 py-1 w-full">
+                {% for sub in form.fields.subcategoria.queryset %}
+                <option value="{{ sub.id }}" {% if form.instance.subcategoria.id == sub.id %}selected{% endif %}>
+                    {{ sub.nombre }} - {{ sub.categoria.nombre }}
+                </option>
+                {% endfor %}
+            </select>
+            {% if form.subcategoria.errors %}
+            <p class="text-red-500 text-sm mt-1">{{ form.subcategoria.errors|first }}</p>
+            {% endif %}
+        </div>        
+
+        {% for field in form %}
+        {% if field.name != 'categoria' and field.name != 'subcategoria' %}
+        <div>
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-600">{{ field.label }}:</label>
+            {{ field }}
+            {% if field.errors %}
+            <p class="text-red-500 text-sm mt-1">{{ field.errors|first }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+
+        <div class="md:col-span-2 flex justify-between mt-6">
+            <a href="{% url 'catalogo_inventario' %}" class="text-red-600 hover:underline">❌ Cancelar</a>
+            <button type="submit" class="bg-yellow-600 text-white px-6 py-2 rounded hover:bg-yellow-700">💾 Guardar</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

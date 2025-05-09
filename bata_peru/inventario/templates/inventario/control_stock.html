@@ -1,0 +1,35 @@
+{% extends 'inventario/base_dashboard.html' %}
+{% block title %}Control de Stock Mínimo{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold text-red-700 mb-6">🚨 Productos con Bajo Stock</h2>
+
+<div class="bg-white p-6 rounded shadow">
+    <table class="min-w-full text-center border border-gray-300">
+        <thead class="bg-red-800 text-white">
+            <tr>
+                <th class="px-3 py-2 border">Nombre</th>
+                <th class="px-3 py-2 border">Stock actual</th>
+                <th class="px-3 py-2 border">Stock mínimo</th>
+                <th class="px-3 py-2 border">Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos_bajos %}
+            <tr class="hover:bg-red-50">
+                <td class="border px-3 py-2">{{ producto.nombre }}</td>
+                <td class="border px-3 py-2 text-red-600 font-bold">{{ producto.cantidad }}</td>
+                <td class="border px-3 py-2">{{ producto.stock_minimo }}</td>
+                <td class="border px-3 py-2">
+                    <a href="{% url 'editar_producto' producto.id %}" class="text-blue-600 hover:underline">✏️ Editar</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="italic text-gray-500 py-4">Todos los productos tienen stock suficiente.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión | Bata Perú</title>
+
+  <!-- Bootstrap 5.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script> <!-- si quieres seguir usando tailwind también -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="min-h-screen flex font-poppins">
+
+  <!-- Sección izquierda: Carrusel Bootstrap -->
+  <div class="w-7/12 h-screen overflow-hidden">
+    <div id="carouselBata" class="carousel slide h-100" data-bs-ride="carousel" data-bs-interval="3500">
+      <div class="carousel-inner h-100">
+    
+        <div class="carousel-item active h-100">
+          <img src="{% static 'carrusel/carrusel_fondo_1.jpg' %}" class="d-block w-100 h-100 object-cover" alt="Slide 1">
+        </div>
+    
+        <div class="carousel-item h-100">
+          <img src="{% static 'carrusel/carrusel_fondo_2.jpeg' %}" class="d-block w-100 h-100 object-cover" alt="Slide 2">
+        </div>
+    
+        <div class="carousel-item h-100">
+          <img src="{% static 'carrusel/carrusel_fondo_3.jpg' %}" class="d-block w-100 h-100 object-cover" alt="Slide 3">
+        </div>
+    
+      </div>
+    
+      <!-- Botones control -->
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselBata" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselBata" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    
+    </div>    
+  </div>
+
+  <!-- Sección derecha: Formulario -->
+  <div class="flex items-center justify-center w-5/12 bg-white animate-fade-in-right">
+    <div class="w-full max-w-md p-10">
+
+      <div class="text-center mb-6">
+        <h2 class="text-3xl font-bold text-red-600">Bienvenido a</h2>
+        <img src="{% static 'img/logo_bata.png' %}" alt="Bata Perú" class="mx-auto mt-3 w-32">
+        <p class="text-gray-600 mt-2 text-sm">Inicia sesión para continuar</p>
+      </div>
+
+      <form method="POST" class="space-y-4">
+        {% csrf_token %}
+    
+        {% if messages %}
+        <div id="toast-messages" class="space-y-2 mb-4">
+          {% for message in messages %}
+            <div class="p-3 rounded-md text-sm text-white bg-red-500 shadow-md animate-fade-in-up">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+        
+        <script>
+          setTimeout(() => {
+            const toast = document.getElementById('toast-messages');
+            if (toast) {
+              toast.style.opacity = '0';
+              toast.style.transition = 'opacity 1s ease';
+            }
+          }, 3000);
+        </script>
+        {% endif %}        
+    
+        <input type="text" name="username" placeholder="Usuario" 
+               class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-400">
+        <input type="password" name="password" placeholder="Contraseña" 
+               class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-400">
+    
+        <button type="submit" 
+                class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-md shadow-lg transition duration-300">
+          🔒 Entrar
+        </button>
+    
+        <div class="text-center mt-4">
+          <a href="{% url 'registro' %}" class="text-sm text-red-600 hover:underline">
+            ¿No tienes cuenta? Regístrate aquí
+          </a>
+        </div>
+    </form>
+    
+
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

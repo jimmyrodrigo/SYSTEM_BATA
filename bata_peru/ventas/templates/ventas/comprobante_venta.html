@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ venta.get_tipo_comprobante_display }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 12px; }
+    .container { width: 700px; margin: auto; padding: 20px; border: 1px solid #ccc; }
+
+    .header-table { width: 100%; margin-bottom: 20px; }
+    .header-table td { vertical-align: top; }
+
+    .logo img { height: 60px; }
+
+    .info-cliente { margin-bottom: 20px; }
+
+    table.detalle, .resumen {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    table.detalle th, table.detalle td, .resumen td {
+      border: 1px solid #000;
+      padding: 6px;
+      font-size: 11px;
+    }
+
+    table.detalle th {
+      background-color: #f0f0f0;
+    }
+
+    .text-right { text-align: right; }
+    .total { font-weight: bold; }
+    .pie { text-align: center; font-size: 11px; margin-top: 25px; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <table class="header-table">
+      <tr>
+        <td class="logo">
+          <img src="{% if logo_path %}{{ logo_path }}{% else %}/media/image/logo.png{% endif %}" alt="Logo" width="150">
+          <p><strong>Empresa:</strong> Bata Perú S.A.C.<br>
+          <strong>RUC:</strong> 20123456789<br>
+          <strong>Dirección:</strong> Pisco, Perú</p>
+        </td>
+        <td class="text-right">
+          <h2>
+            {% if venta.tipo_comprobante == "factura" %}
+              Factura Electrónica
+            {% else %}
+              Boleta de Venta Electrónica
+            {% endif %}
+          </h2>
+          <p><strong>N° {{ venta.id|stringformat:"05d" }}</strong></p>
+          <p><strong>Fecha de emisión:</strong> {{ venta.fecha|date:"d/m/Y H:i" }}</p>
+        </td>
+      </tr>
+    </table>
+
+    <div class="info-cliente">
+      {% if venta.tipo_comprobante == "factura" %}
+        <p><strong>RUC del cliente:</strong> {{ venta.documento_cliente }}</p>
+        <p><strong>Razón Social:</strong> {{ venta.razon_social }}</p>
+      {% else %}
+        <p><strong>Tipo de documento:</strong> {{ venta.get_tipo_documento_display }}</p>
+        <p><strong>Número de documento:</strong> {{ venta.documento_cliente }}</p>
+        <p><strong>Cliente:</strong> {{ venta.nombres_cliente }} {{ venta.apellidos_cliente }}</p>
+      {% endif %}
+      <p><strong>Método de pago:</strong> {{ venta.get_tipo_pago_display }}</p>
+    </div>
+
+    <table class="detalle">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio unitario</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for detalle in venta.detalleventa_set.all %}
+        <tr>
+          <td>{{ detalle.producto.nombre }}</td>
+          <td>{{ detalle.cantidad }}</td>
+          <td class="text-right">S/ {{ detalle.producto.precio|floatformat:2 }}</td>
+          <td class="text-right">S/ {{ detalle.subtotal|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <table class="resumen">
+      {% if venta.tipo_comprobante == "factura" %}
+        <tr>
+          <td class="text-right">Subtotal sin IGV:</td>
+          <td class="text-right">S/ {{ base|floatformat:2 }}</td>
+        </tr>
+        <tr>
+          <td class="text-right">IGV (18%):</td>
+          <td class="text-right">S/ {{ igv|floatformat:2 }}</td>
+        </tr>
+      {% endif %}
+      <tr class="total">
+        <td class="text-right">Total:</td>
+        <td class="text-right">S/ {{ venta.total|floatformat:2 }}</td>
+      </tr>
+    </table>
+
+    <div class="text-right mt-6">
+      <a href="{% url 'descargar_pdf' venta.id %}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+        📄 Descargar PDF
+      </a>
+    </div>    
+
+    <p class="pie">
+      {% if venta.tipo_comprobante == "factura" %}
+        Representación impresa de la Factura Electrónica. Este documento cumple con los requisitos de SUNAT.
+      {% else %}
+        Representación impresa de la Boleta de Venta Electrónica. No sustenta crédito fiscal.
+      {% endif %}
+    </p>
+  </div>
+</body>
+</html>

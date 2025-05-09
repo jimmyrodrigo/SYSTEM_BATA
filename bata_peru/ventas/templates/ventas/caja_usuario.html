@@ -1,0 +1,57 @@
+{% extends 'ventas/base_dashboard.html' %}
+{% block title %}Caja del Cajero{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
+  <h2 class="text-2xl font-bold text-red-600 mb-4">💵 Control de Caja</h2>
+
+  {% if messages %}
+    <div class="space-y-2 mb-4">
+      {% for message in messages %}
+        <div class="bg-{{ message.tags }}-100 text-{{ message.tags }}-700 p-3 rounded shadow">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if not caja_abierta and not caja_cerrada %}
+    <!-- Apertura de caja -->
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="accion" value="abrir">
+      <label class="block font-medium">Monto inicial:</label>
+      <input type="number" name="monto_inicial" step="0.01" min="0" required
+             class="w-full p-2 border rounded mb-4">
+      <button type="submit"
+              class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+        🔓 Abrir Caja
+      </button>
+    </form>
+
+  {% elif caja_abierta %}
+    <!-- Caja abierta -->
+    <p><strong>Fecha de apertura:</strong> {{ caja_abierta.fecha_apertura|date:"d/m/Y H:i" }}</p>
+    <p><strong>Monto inicial:</strong> S/ {{ caja_abierta.saldo_inicial|floatformat:2 }}</p>
+    <p><strong>Ingresos (ventas):</strong> S/ {{ caja_abierta.ingresos|floatformat:2 }}</p>
+    <p><strong>Total en caja:</strong> S/ {{ caja_abierta.saldo_final|floatformat:2 }}</p>
+
+    <form method="POST" class="mt-4">
+      {% csrf_token %}
+      <input type="hidden" name="accion" value="cerrar">
+      <button type="submit"
+              class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">
+        🔒 Cerrar Caja
+      </button>
+    </form>
+
+  {% elif caja_cerrada %}
+    <!-- Caja cerrada -->
+    <div class="text-center">
+      <p class="text-green-700 font-semibold">La caja ya fue cerrada hoy.</p>
+      <p><strong>Fecha cierre:</strong> {{ caja_cerrada.fecha_cierre|date:"d/m/Y H:i" }}</p>
+      <p><strong>Total final:</strong> S/ {{ caja_cerrada.saldo_final|floatformat:2 }}</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

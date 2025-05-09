@@ -1,0 +1,147 @@
+{% extends 'inventario/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Catálogo - Inventario{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <h2 class="text-2xl font-bold text-gray-800">📦 Catálogo General - Control de Inventario</h2>
+    <script>
+        setTimeout(() => {
+            const toast = document.getElementById('toast-container');
+            if (toast) {
+                toast.style.opacity = '0';
+            }
+        }, 3000);
+    </script>
+
+
+    <!-- Filtro de búsqueda -->
+    <form method="get" class="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input type="text" name="buscar" placeholder="Buscar por nombre" value="{{ request.GET.buscar }}" class="p-3 border rounded shadow-sm w-full" />
+
+        <select name="marca" class="p-3 border rounded shadow-sm w-full">
+            <option value="">Todas las marcas</option>
+            {% for m in marcas %}
+            <option value="{{ m }}" {% if request.GET.marca == m %}selected{% endif %}>{{ m }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="color" class="p-3 border rounded shadow-sm w-full">
+            <option value="">Todos los colores</option>
+            {% for c in colores %}
+            <option value="{{ c }}" {% if request.GET.color == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="categoria" class="p-3 border rounded shadow-sm w-full">
+            <option value="">Todas las categorías</option>
+            {% for cat in categorias %}
+            <option value="{{ cat }}" {% if request.GET.categoria == cat %}selected{% endif %}>{{ cat|capfirst }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="subcategoria" class="p-3 border rounded shadow-sm w-full">
+            <option value="">Todas las subcategorías</option>
+            {% for sub in subcategorias %}
+            <option value="{{ sub }}" {% if request.GET.subcategoria == sub %}selected{% endif %}>{{ sub|capfirst }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- Nuevo: filtro por fecha de ingreso -->
+        <input type="date" name="fecha_ingreso" value="{{ request.GET.fecha_ingreso }}" class="p-3 border rounded shadow-sm w-full" />
+
+        <!-- Nuevo: filtro por stock bajo -->
+        <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="stock_bajo" {% if request.GET.stock_bajo %}checked{% endif %}>
+            <span>Solo stock bajo</span>
+        </label>
+
+        <!-- Botones -->
+        <div class="md:col-span-3 flex gap-4">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition shadow">🔍 Filtrar</button>
+            <a href="{% url 'catalogo_inventario' %}" class="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 transition shadow">❌ Limpiar</a>
+        </div>
+    </form>
+
+    <!-- Tabla de productos -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-center border border-gray-200">
+                <thead class="bg-gray-800 text-white">
+                    <tr>
+                        <th class="px-4 py-2 border">Nombre</th>
+                        <th class="px-4 py-2 border">Marca</th>
+                        <th class="px-4 py-2 border">Color</th>
+                        <th class="px-4 py-2 border">Precio</th>
+                        <th class="px-4 py-2 border">Stock</th>
+                        <th class="px-4 py-2 border">Imagen</th>
+                        <th class="px-4 py-2 border">Fecha Ingreso</th>
+                        <th class="px-4 py-2 border">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr class="hover:bg-gray-100 {% if producto.cantidad <= producto.stock_minimo %}bg-red-50{% endif %}">
+                        <td class="border px-3 py-2">{{ producto.nombre }}</td>
+                        <td class="border px-3 py-2">{{ producto.marca }}</td>
+                        <td class="border px-3 py-2">{{ producto.color }}</td>
+                        <td class="border px-3 py-2">S/ {{ producto.precio }}</td>
+                        <td class="border px-3 py-2">
+                            <form method="POST" action="{% url 'actualizar_stock' producto.id %}" class="flex items-center justify-center space-x-2">
+                                {% csrf_token %}
+                                <input type="number" name="cantidad" value="{{ producto.cantidad }}" min="0"
+                                       class="w-20 text-center border-gray-300 rounded">
+                                <button type="submit"
+                                        class="bg-blue-500 text-white text-sm px-2 py-1 rounded hover:bg-blue-600 transition">
+                                    💾
+                                </button>
+                            </form>
+                        </td>
+                        <td class="border px-3 py-2">
+                            {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}" alt="Imagen" class="w-12 h-12 object-cover mx-auto rounded">
+                            {% else %}
+                            <span class="text-sm text-gray-400">Sin imagen</span>
+                            {% endif %}
+                        </td>
+                        <td class="border px-3 py-2">{{ producto.fecha_ingreso }}</td>
+                        <td class="border px-3 py-2 space-x-2">
+                            <button onclick="openModal('{{ producto.id }}')" class="text-yellow-600 hover:underline">✏️</button>
+                            <a onclick="return confirm('¿Estás seguro de eliminar el producto?')" href="{% url 'eliminar_producto' producto.id %}" class="text-red-600 hover:underline">🗑️</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal-editar" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white w-full max-w-2xl p-6 rounded shadow-xl relative">
+            <button onclick="closeModal()" class="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-2xl">&times;</button>
+            <h3 class="text-xl font-bold mb-4 text-yellow-600">✏️ Editar Producto</h3>
+            <div id="modal-form-container">
+                <div class="text-center text-gray-500">Cargando...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(productId) {
+            const modal = document.getElementById('modal-editar');
+            const container = document.getElementById('modal-form-container');
+            modal.classList.remove('hidden');
+            fetch(`/inventario/editar/${productId}/`)
+                .then(response => response.text())
+                .then(html => {
+                    container.innerHTML = html;
+                });
+        }
+        function closeModal() {
+            document.getElementById('modal-editar').classList.add('hidden');
+        }
+    </script>
+</div>
+{% endblock %}

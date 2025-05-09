@@ -1,0 +1,49 @@
+nombre,categoria,subcategoria,marca,color,imagen,precio,cantidad
+Zapatillas deportivas Power blanco y negro,hombre,calzados,Power,Blanco y negro,image/hombres/calzados/zapatillas_deportivas_hombre_power_blanco_y_negro.jpg,99.9,43
+Zapatillas deportivas Power negro estilo,hombre,calzados,Power,Negro,image/hombres/calzados/zapatillas_deportivas_hombre_power_negro_estilo.jpg,95.9,33
+Zapatillas deportivas Power negro,hombre,calzados,Power,Negro,image/hombres/calzados/zapatillas_deportivas_hombre_power_negro.jpg,95.9,19
+Zapatillas deportivas running Power blancas,hombre,calzados,Power,Blanco,image/hombres/calzados/zapatillas_deportivas_running_hombre_power_blanca.jpg,105.9,47
+Zapatillas urbanas North Star blanco y negro,hombre,calzados,North Star,Blanco y negro,image/hombres/calzados/zapatillas_urbanas_hombre_north_star_blanco_y_negro.jpg,89.9,12
+Zapatillas urbanas North Star,hombre,calzados,North Star,Negro,image/hombres/calzados/zapatillas_urbanas_hombre_north_star.jpg,89.9,25
+Zapatillas urbanas SmileyWorld North Star,hombre,calzados,North Star,Multicolor,image/hombres/calzados/zapatillas_urbanas_smileyworld_north_star.jpg,94.9,43
+Zapatos de vestir Bata marrón,hombre,calzados,Bata,Marrón,image/hombres/calzados/zapatos_de_vestir_hombre_bata_marron.jpg,119.9,23
+Bailarinas casuales Bata Red,mujer,calzados,Bata Red,Rojo,image/mujeres/calzados/bailarinas_casuales_bata_red_mujer.jpg,79.9,27
+Bailarinas casuales Bata Red plomo y negro,mujer,calzados,Bata Red,Plomo y negro,image/mujeres/calzados/ballerinas_casuales_bata_red_mujer_plomo_y_negro.jpg,79.9,15
+Botines casuales marrón Bata,mujer,calzados,Bata,Marrón,image/mujeres/calzados/botines_casuales_mujer_bata_marron.jpg,129.9,15
+Botines casuales negro plomo Bata Red,mujer,calzados,Bata Red,Negro y plomo,image/mujeres/calzados/botines_casuales_mujer_bata_red_negro_plomo.jpg,129.9,28
+Botines casuales plomo brillante Bata Red,mujer,calzados,Bata Red,Plomo brillante,image/mujeres/calzados/botines_casuales_mujer_bata_red_plomo_brillante.jpg,134.9,40
+Zapatillas urbanas North Star mujer,mujer,calzados,North Star,Negro,image/mujeres/calzados/zapatillas_urbanas_mujer_north_star.jpg,89.9,44
+Zapatos de vestir negro y plomo Bata Red,mujer,calzados,Bata Red,Negro y plomo,image/mujeres/calzados/zapatos_de_vestir_bata_red_mujer_negro_y_plomo.jpg,119.9,28
+Zapatos de vestir rojo Bata Red,mujer,calzados,Bata Red,Rojo,image/mujeres/calzados/zapatos_de_vestir_bata_red_mujer.jpg,119.9,7
+Sandalias infantil Disney Mickey 26-29,niños,calzados,Disney,"Azul marino, rojo y blanco",image/niños/calzados/sandalias_infantil_niño_bublegummers_26-29.jpg,69.9,45
+Zapatillas urbanas niño Bubblegummers blancas,niños,calzados,Bubblegummers,Blanco,image/niños/calzados/zapatillas_urbanas_junior_niño_bubblegummers_blancas.jpg,84.9,32
+Zapatillas deportivas niño Bubblegummers negras,niños,calzados,Bubblegummers,Negro,image/niños/calzados/zapatillas_deportivas_niño_bubblegummers_negra.jpg,89.9,43
+Sandalias bebé niño Disney 22-25,niños,calzados,Disney,Azul y rojo,image/niños/calzados/sandalias_bebe_niño_disney_22-25.jpg,59.9,13
+Sandalias bebé niño Disney 18-21,niños,calzados,Disney,Azul y rojo,image/niños/calzados/sandalias_bebe_niño_disney_18-21.jpg,59.9,18
+Sandalias infantil Bubblegummers 22-25,niños,calzados,Bubblegummers,Negro y rojo,image/niños/calzados/sandalias_infantil_niño_bubblegummers_22-25.jpg,62.9,39
+Traje de baño sin manga niño,niños,ropa,Bubblegummers,Azul y verde,image/niños/ropa/traje_de_baño_sin_manga_niño_bubblegummers.jpg,49.9,41
+Polo manga corta blanco niño,niños,ropa,Bubblegummers,Blanco,image/niños/ropa/polo_manga_corta_niño_bubblegummers_blanca.jpg,29.9,30
+Camisa manga corta blanca niño,niños,ropa,Bubblegummers,Blanco,image/niños/ropa/camisa_manga_corta_niño_bublegummers_blanca.jpg,32.9,33
+Bordie rayas celeste niño,niños,ropa,Bubblegummers,Celeste,image/niños/ropa/bordie_rayas_niño_bublegummers_celeste.jpg,31.9,45
+Short jean azul oscuro niño,niños,ropa,Bubblegummers,Azul oscuro,image/niños/ropa/short_jean_niño_bubblegummers_azul_oscuro.jpg,39.9,21
+Plantilla memory dinosaurios niño,niños,accesorios,Bubblegummers,Amarillo,image/niños/accesorios/plantilla_memory_niño_bubblegummers_rosa_amarillo.jpg,22.9,14
+Fivepack de medias niño,niños,accesorios,Bubblegummers,Multicolor,image/niños/accesorios/fivepack_de_medias_bubblegumers.jpg,24.9,16
+Abrillantador para calzado niño,niños,accesorios,Bubblegummers,Rojo,image/niños/accesorios/abrillantador_para_calzado_bublegummers.jpg,15.9,36
+Zapatillas urbanas niña Bubblegummers,niñas,calzados,Bubblegummers,Blanco y lila,image/niñas/calzados/zapatillas_urbanas_bubblegummers_niña.jpg,89.9,19
+Zapatillas urbanas junior niña North Star,niñas,calzados,North Star,"Blanco, rosado y lila",image/niñas/calzados/zapatillas_urbanas_niña_junior_north_star.jpg,89.9,38
+Zapatillas bebé niña Bubblegummers 18-21,niñas,calzados,Bubblegummers,Azul y rosa,image/niñas/calzados/zapatillas_bebe_niña_bubblegummers_18-21.jpg,72.9,29
+Sandalias casuales Disney niña,niñas,calzados,Disney,Blanco y lila,image/niñas/calzados/sandalias_casuales_licenses_disney_niña.jpg,66.9,25
+Zapatillas escolar unisex,niñas,calzados,Bata,Blanco,image/niñas/calzados/zapatillas_escolar_unisex_bata.jpg,74.9,25
+Botines junior niña Bubblegummers,niñas,calzados,Bubblegummers,Negro,image/niñas/calzados/botines_junior_niña_bubblegummers_30.jpg,89.9,27
+Zapatos bebé niña Bubblegummers,niñas,calzados,Bubblegummers,Rosado,image/niñas/calzados/zapatos_bebe_niña_bubblegummers_18.jpg,72.9,38
+Traje de baño sin manga niña,niñas,ropa,Bubblegummers,Rosado,image/niñas/ropa/traje_de_baño_sin_manga_niña_bubblegummers.jpg,49.9,15
+Vestido manga corta niña,niñas,ropa,Bubblegummers,Negro,image/niñas/ropa/vestido_manga_corta_niña_bubblegummers_negro.jpg,52.9,47
+Polo manga larga azul niña,niñas,ropa,Bubblegummers,Azul,image/niñas/ropa/polo_manga_larga_niña_bubblegummers_azul.jpg,41.9,44
+Tripack escolar Hello Kitty niña,niñas,accesorios,Hello Kitty,Rosado y verde,image/niñas/accesorios/tripack_escolar_licenses_niña_hello_kitty.jpg,27.9,14
+Tripack escolar Pow niña,niñas,accesorios,Licenses,Rosado,image/niñas/accesorios/tripack_escolar_licenses_niña_pow.jpg,27.9,22
+Bipack medias unisex,niñas,accesorios,North Star,Blanco,image/niñas/accesorios/bipack_medias_unisex_north_star.jpg,19.9,15
+Gorro Barbie niña,niñas,accesorios,Licenses,Rosado,image/niñas/accesorios/gorro_barbie_niña_licenses.jpg,25.9,31
+Abrillantador calzado niña,niñas,accesorios,Bubblegummers,Rojo,image/niñas/accesorios/abrillantador_para_calzado_bubblegummers.jpg,14.9,30
+Mochila urbana azul niña,niñas,accesorios,North Star,Azul,image/niñas/accesorios/mochila_urbana_north_star_niña_azul.jpg,59.9,23
+Lentes de sol niña,niñas,accesorios,Bubblegummers,Rosado,image/niñas/accesorios/lentes_de_sol_niña_bubblegummers.jpg,29.9,25
+Mochila urbana rosa niña,niñas,accesorios,North Star,Rosado,image/niñas/accesorios/mochila_urbana_north_star_niña_rosa.jpg,59.9,49
