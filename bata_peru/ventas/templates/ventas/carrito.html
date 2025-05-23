@@ -23,6 +23,7 @@
       {% for item in carrito_items %}
       <tr class="border-t">
         <td class="p-3">{{ item.producto.nombre }}</td>
+        <td class="p-3">{{ item.producto.talla }}</td>
         <td class="p-3 text-right">S/ {{ item.producto.precio|floatformat:2 }}</td>
         <td class="p-3 text-center">{{ item.cantidad }}</td>
         <td class="p-3 text-right">S/ {{ item.subtotal|floatformat:2 }}</td>

@@ -31,6 +31,7 @@
 
   {% elif caja_abierta %}
     <!-- Caja abierta -->
+    <p><strong>Usuario</strong> {{ caja_abierta.usuario.username }}</p>
     <p><strong>Fecha de apertura:</strong> {{ caja_abierta.fecha_apertura|date:"d/m/Y H:i" }}</p>
     <p><strong>Monto inicial:</strong> S/ {{ caja_abierta.saldo_inicial|floatformat:2 }}</p>
     <p><strong>Ingresos (ventas):</strong> S/ {{ caja_abierta.ingresos|floatformat:2 }}</p>

@@ -33,7 +33,12 @@
             <option value="{{ c }}" {% if request.GET.color == c %}selected{% endif %}>{{ c }}</option>
             {% endfor %}
         </select>
-
+       <select name="talla" class="p-3 border rounded shadow-sm w-full">
+            <option value="">Todos las tallas</option>
+            {% for t in talla %}
+            <option value="{{ t }}" {% if request.GET.talla == t %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+        </select>
         <select name="categoria" class="p-3 border rounded shadow-sm w-full">
             <option value="">Todas las categorías</option>
             {% for cat in categorias %}
@@ -65,7 +70,7 @@
     </form>
 
     <!-- Tabla de productos -->
-    <div class="bg-white p-6 rounded-lg shadow">
+    <div class="bg-white rounded-lg shadow">
         <div class="overflow-x-auto">
             <table class="min-w-full text-center border border-gray-200">
                 <thead class="bg-gray-800 text-white">
@@ -73,6 +78,7 @@
                         <th class="px-4 py-2 border">Nombre</th>
                         <th class="px-4 py-2 border">Marca</th>
                         <th class="px-4 py-2 border">Color</th>
+                        <th class="px-4 py-2 border">Talla</th>
                         <th class="px-4 py-2 border">Precio</th>
                         <th class="px-4 py-2 border">Stock</th>
                         <th class="px-4 py-2 border">Imagen</th>
@@ -86,6 +92,7 @@
                         <td class="border px-3 py-2">{{ producto.nombre }}</td>
                         <td class="border px-3 py-2">{{ producto.marca }}</td>
                         <td class="border px-3 py-2">{{ producto.color }}</td>
+                        <td class="border px-3 py-2">{{ producto.talla  }}</td>                        
                         <td class="border px-3 py-2">S/ {{ producto.precio }}</td>
                         <td class="border px-3 py-2">
                             <form method="POST" action="{% url 'actualizar_stock' producto.id %}" class="flex items-center justify-center space-x-2">

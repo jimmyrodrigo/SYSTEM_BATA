@@ -13,8 +13,8 @@
       <div class="md:col-span-2">
         <label class="block mb-1 font-medium">Tipo de Comprobante</label>
         <select name="tipo_comprobante" id="tipo_comprobante" required class="w-full border rounded p-2">
-          <option value="boleta">Boleta</option>
-          <option value="factura">Factura</option>
+          <option value="boleta" {% if tipo_comprobante == 'boleta' %}selected{% endif %}>Boleta</option>
+          <option value="factura" {% if tipo_comprobante == 'factura' %}selected{% endif %}>Factura</option>
         </select>
       </div>
 
@@ -81,9 +81,12 @@
     <h3 class="text-xl font-semibold mb-2">Resumen de la compra</h3>
     <ul class="space-y-2 mb-4">
       {% for item in productos %}
-        <li class="flex justify-between border-b pb-1 text-sm">
+        <li class="flex flex-col border-b pb-1 text-sm">
           <span>{{ item.producto.nombre }} x{{ item.cantidad }}</span>
-          <span>S/ {{ item.subtotal|floatformat:2 }}</span>
+          <span class="text-gray-600 text-xs">
+            Precio unitario: S/ {{ item.precio_unitario_real|floatformat:2 }}
+          </span>
+          <span class="self-end font-semibold">S/ {{ item.subtotal|floatformat:2 }}</span>
         </li>
       {% endfor %}
     </ul>
@@ -99,7 +102,6 @@
     </div>
   </form>
 </div>
-
 <script>
   const tipoComprobante = document.getElementById('tipo_comprobante');
   const tipoDocumento = document.getElementById('tipo_documento');
@@ -120,6 +122,49 @@
     pasaporte: 15
   };
 
+  const productosData = [
+    {% for item in productos %}
+      {
+        precioConIGV: {{ item.producto.precio|floatformat:2 }},
+        cantidad: {{ item.cantidad }},
+        precioSinIGV: ({{ item.producto.precio|floatformat:2 }} / 1.18).toFixed(2)
+      }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  function actualizarPrecios() {
+    const tipo = tipoComprobante.value;
+    const listaItems = document.querySelectorAll('.space-y-2.mb-4 > li');
+    let subtotalTotal = 0;
+
+    productosData.forEach((item, index) => {
+      const precioUnitario = tipo === 'factura' ? parseFloat(item.precioConIGV) : parseFloat(item.precioSinIGV);
+      const subtotal = precioUnitario * item.cantidad;
+      subtotalTotal += subtotal;
+
+      if (listaItems[index]) {
+        listaItems[index].querySelector('span.text-gray-600').textContent = `Precio unitario: S/ ${precioUnitario.toFixed(2)}`;
+        listaItems[index].querySelector('span.self-end').textContent = `S/ ${subtotal.toFixed(2)}`;
+      }
+    });
+
+    const igvElem = document.querySelector('p.text-sm:nth-of-type(2) strong');
+    const subtotalElem = document.querySelector('p.text-sm:nth-of-type(1) strong');
+    const totalElem = document.querySelector('p.text-base strong');
+
+    if (tipo === 'boleta') {
+      igvElem.textContent = '0.00';
+      subtotalElem.textContent = subtotalTotal.toFixed(2);
+      totalElem.textContent = subtotalTotal.toFixed(2);
+    } else {
+      const baseSinIGV = subtotalTotal / 1.18;
+      const igv = subtotalTotal - baseSinIGV;
+      igvElem.textContent = igv.toFixed(2);
+      subtotalElem.textContent = baseSinIGV.toFixed(2);
+      totalElem.textContent = subtotalTotal.toFixed(2);
+    }
+  }
+
   function updateTipoDocumentoOptions() {
     tipoDocumento.innerHTML = '';
     if (tipoComprobante.value === 'boleta') {
@@ -134,6 +179,7 @@
       facturaFields.classList.remove('hidden');
     }
     aplicarRestriccionDocumento();
+    actualizarPrecios();
   }
 
   function aplicarRestriccionDocumento() {
@@ -145,8 +191,14 @@
     rucValido = false;
   }
 
-  tipoComprobante.addEventListener('change', updateTipoDocumentoOptions);
-  tipoDocumento.addEventListener('change', aplicarRestriccionDocumento);
+  tipoComprobante.addEventListener('change', () => {
+    updateTipoDocumentoOptions();
+  });
+
+  tipoDocumento.addEventListener('change', () => {
+    aplicarRestriccionDocumento();
+    actualizarPrecios();
+  });
 
   document.addEventListener('DOMContentLoaded', () => {
     updateTipoDocumentoOptions();
@@ -186,12 +238,14 @@
     }
   });
 
-  // Calcular vuelto en tiempo real
   document.getElementById('monto_pagado').addEventListener('input', () => {
     const pagado = parseFloat(document.getElementById('monto_pagado').value);
-    const total = {{ total_final|floatformat:2 }};
-    const vueltoField = document.getElementById('vuelto_mostrado');
+    const tipoComprobanteVal = tipoComprobante.value;
+    let total = tipoComprobanteVal === 'boleta'
+      ? parseFloat(document.querySelector('p.text-sm:nth-of-type(1) strong').textContent)
+      : parseFloat(document.querySelector('p.text-base strong').textContent);
 
+    const vueltoField = document.getElementById('vuelto_mostrado');
     if (!isNaN(pagado) && pagado >= total) {
       const vuelto = (pagado - total).toFixed(2);
       vueltoField.value = `S/ ${vuelto}`;
@@ -205,7 +259,11 @@
     const numero = documentoInput.value.trim();
     const requerido = maxLengthPorTipo[tipo];
     const pagado = parseFloat(document.getElementById('monto_pagado').value);
-    const total = {{ total_final|floatformat:2 }};
+    const tipoComprobanteVal = tipoComprobante.value;
+
+    let total = tipoComprobanteVal === 'boleta'
+      ? parseFloat(document.querySelector('p.text-sm:nth-of-type(1) strong').textContent)
+      : parseFloat(document.querySelector('p.text-base strong').textContent);
 
     if (numero.length !== requerido) {
       e.preventDefault();

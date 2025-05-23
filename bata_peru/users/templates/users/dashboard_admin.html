@@ -1,9 +1,60 @@
 {% extends "base.html" %}
 {% block title %}Dashboard Admin{% endblock %}
+
 {% block content %}
-<div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded shadow">
-  <h1 class="text-2xl font-bold mb-4">Bienvenido, Administrador</h1>
-  <p class="mb-2">Aquí podrás gestionar usuarios, ver estadísticas de rendimiento y controlar el sistema.</p>
-  <!-- Aquí irán enlaces a gestión de usuarios, reportes, etc -->
+<div class="max-w-6xl mx-auto mt-10 p-8 bg-white rounded shadow">
+  <h1 class="text-3xl font-bold mb-6 text-gray-800">Bienvenido, Administrador</h1>
+  <p class="mb-8 text-gray-600">Gestiona usuarios, revisa solicitudes y administra el sistema desde aquí.</p>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <!-- Gestión de Usuarios -->
+    <a href="{% url 'gestion_usuarios' %}" class="block p-6 bg-blue-600 rounded-lg shadow hover:bg-blue-700 transition">
+      <div class="flex items-center space-x-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A8.964 8.964 0 0112 15a8.964 8.964 0 016.879 2.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <div>
+          <h2 class="text-white text-lg font-semibold">Gestión de Usuarios</h2>
+          <p class="text-blue-200">Agrega, modifica o elimina usuarios del sistema.</p>
+        </div>
+      </div>
+    </a>
+
+    <!-- Solicitudes de cierre -->
+    <a href="{% url 'solicitudes_cierre_caja' %}" class="relative block p-6 bg-green-600 rounded-lg shadow hover:bg-green-700 transition">
+      <div class="flex items-center space-x-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 014-4h1m-6 6h6m-6 0v1m0-1v-1m6 1v-1a4 4 0 00-4-4h-1m4 6h.01"/></svg>
+        <div>
+          <h2 class="text-white text-lg font-semibold">Solicitudes de cierre de caja</h2>
+          <p class="text-green-200">Revisa y aprueba o rechaza cierres de caja pendientes.</p>
+        </div>
+      </div>
+      {% if solicitudes_count and solicitudes_count > 0 %}
+        <span class="absolute top-2 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+          {{ solicitudes_count }}
+        </span>
+      {% endif %}
+    </a>
+
+    <!-- Solicitudes de anulación de venta -->
+    <a href="{% url 'revisar_solicitudes_anulacion' %}" class="relative block p-6 bg-red-600 rounded-lg shadow hover:bg-red-700 transition">
+      <div class="flex items-center space-x-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div>
+          <h2 class="text-white text-lg font-semibold">Solicitudes de anulación de venta</h2>
+          <p class="text-red-200">Revisa y gestiona solicitudes pendientes de anulación de ventas.</p>
+        </div>
+      </div>
+      {% if solicitudes_anulacion_count and solicitudes_anulacion_count > 0 %}
+        <span class="absolute top-2 right-4 bg-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+          {{ solicitudes_anulacion_count }}
+        </span>
+      {% endif %}
+    </a>
+
+    <!-- Estadísticas o futuros módulos -->
+    <div class="p-6 bg-gray-100 rounded-lg shadow">
+      <h2 class="text-gray-800 text-lg font-semibold mb-2">Próximamente</h2>
+      <p class="text-gray-600">Módulos de reportes, configuraciones y más.</p>
+    </div>
+  </div>
 </div>
 {% endblock %}

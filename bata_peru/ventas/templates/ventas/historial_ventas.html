@@ -5,7 +5,6 @@
 {% block content %}
 <h2 class="text-2xl font-bold mb-6">📜 Historial de Ventas</h2>
 
-<!-- FILTROS -->
 <form method="GET" class="mb-6 bg-white p-4 rounded shadow flex flex-col md:flex-row items-end md:items-center gap-4">
   <div>
     <label class="block text-sm font-medium text-gray-600">Desde:</label>
@@ -28,13 +27,14 @@
   </button>
 </form>
 
-<!-- TABLA -->
 <table class="w-full bg-white shadow rounded overflow-hidden text-sm">
   <thead class="bg-blue-100 text-left">
     <tr>
       <th class="p-3">Producto(s)</th>
       <th class="p-3">Cantidad(es)</th>
-      <th class="p-3">Pago</th>
+      <th class="p-3">Tipo de Pago</th>
+      <th class="p-3">Pagó</th>
+      <th class="p-3">Vuelto</th>
       <th class="p-3">Fecha</th>
       <th class="p-3">Total</th>
       <th class="p-3">Estado</th>
@@ -58,11 +58,13 @@
         </ul>
       </td>
       <td class="p-3">{{ venta.get_tipo_pago_display }}</td>
+      <td class="p-3">S/ {{ venta.monto_pagado|floatformat:2 }}</td>
+      <td class="p-3">S/ {{ venta.vuelto|floatformat:2 }}</td>
       <td class="p-3">{{ venta.fecha|localtime|date:"Y-m-d H:i" }}</td>
       <td class="p-3">S/ {{ venta.total|floatformat:2 }}</td>
       <td class="p-3">
         {% if not venta.anulada %}
-          <form method="POST" action="{% url 'anular_venta' venta.id %}">
+          <form method="POST" action="{% url 'solicitar_anulacion_venta' venta.id %}">
             {% csrf_token %}
             <button type="submit" class="text-sm text-red-600 hover:underline">Anular</button>
           </form>
@@ -73,7 +75,7 @@
     </tr>
     {% empty %}
     <tr>
-      <td colspan="6" class="p-4 text-center text-gray-500">Aún no tienes ventas registradas.</td>
+      <td colspan="8" class="p-4 text-center text-gray-500">Aún no tienes ventas registradas.</td>
     </tr>
     {% endfor %}
   </tbody>

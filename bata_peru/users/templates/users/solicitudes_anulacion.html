@@ -1,0 +1,38 @@
+{% extends "ventas/base_dashboard.html" %}
+{% block title %}Solicitudes de Anulación{% endblock %}
+
+{% block content %}
+  <h2 class="text-2xl font-bold mb-6">Solicitudes de Anulación de Ventas</h2>
+
+  {% if solicitudes %}
+    <table class="w-full table-auto border-collapse border border-gray-300">
+      <thead>
+        <tr>
+          <th class="border border-gray-300 px-4 py-2">Venta ID</th>
+          <th class="border border-gray-300 px-4 py-2">Cliente</th>
+          <th class="border border-gray-300 px-4 py-2">Comentario</th>
+          <th class="border border-gray-300 px-4 py-2">Fecha Solicitud</th>
+          <th class="border border-gray-300 px-4 py-2">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for solicitud in solicitudes %}
+        <tr>
+          <td class="border border-gray-300 px-4 py-2">{{ solicitud.venta.id }}</td>
+          <td class="border border-gray-300 px-4 py-2">{{ solicitud.venta.nombres_cliente }} {{ solicitud.venta.apellidos_cliente }}</td>
+          <td class="border border-gray-300 px-4 py-2">{{ solicitud.comentario }}</td>
+          <td class="border border-gray-300 px-4 py-2">{{ solicitud.fecha_solicitud|date:"Y-m-d H:i" }}</td>
+          <td class="border border-gray-300 px-4 py-2">
+            <form method="POST" action="{% url 'aprobar_anulacion_venta' solicitud.id %}">
+              {% csrf_token %}
+              <button type="submit" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Aprobar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No hay solicitudes pendientes.</p>
+  {% endif %}
+{% endblock %}

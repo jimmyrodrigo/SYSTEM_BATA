@@ -13,11 +13,13 @@ class ProductoForm(forms.ModelForm):
             'precio',
             'cantidad',
             'imagen',
+            'talla',
         ]
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'w-full border-gray-300 rounded shadow-sm'}),
             'marca': forms.TextInput(attrs={'class': 'w-full border-gray-300 rounded shadow-sm'}),
             'color': forms.TextInput(attrs={'class': 'w-full border-gray-300 rounded shadow-sm'}),
+            'talla': forms.TextInput(attrs={'class': 'w-full border-gray-300 rounded shadow-sm'}),
             'categoria': forms.Select(attrs={'class': 'w-full border-gray-300 rounded shadow-sm'}),     # ✅
             'subcategoria': forms.Select(attrs={'class': 'w-full border-gray-300 rounded shadow-sm'}),  # ✅
             'precio': forms.NumberInput(attrs={'class': 'w-full border-gray-300 rounded shadow-sm'}),

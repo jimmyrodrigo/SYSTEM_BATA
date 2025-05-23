@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>{{ venta.get_tipo_comprobante_display }}</title>
   <style>
     body { font-family: Arial, sans-serif; font-size: 12px; }
@@ -40,9 +40,9 @@
     <table class="header-table">
       <tr>
         <td class="logo">
-          <img src="{% if logo_path %}{{ logo_path }}{% else %}/media/image/logo.png{% endif %}" alt="Logo" width="150">
-          <p><strong>Empresa:</strong> Bata Perú S.A.C.<br>
-          <strong>RUC:</strong> 20123456789<br>
+          <img src="{% if logo_path %}{{ logo_path }}{% else %}/media/image/logo.png{% endif %}" alt="Logo" width="150" />
+          <p><strong>Empresa:</strong> Bata Perú S.A.C.<br />
+          <strong>RUC:</strong> 20123456789<br />
           <strong>Dirección:</strong> Pisco, Perú</p>
         </td>
         <td class="text-right">
@@ -62,13 +62,14 @@
     <div class="info-cliente">
       {% if venta.tipo_comprobante == "factura" %}
         <p><strong>RUC del cliente:</strong> {{ venta.documento_cliente }}</p>
-        <p><strong>Razón Social:</strong> {{ venta.razon_social }}</p>
+        <p><strong>Razón Social:</strong> {{venta.razon_social }}</p>
       {% else %}
         <p><strong>Tipo de documento:</strong> {{ venta.get_tipo_documento_display }}</p>
         <p><strong>Número de documento:</strong> {{ venta.documento_cliente }}</p>
         <p><strong>Cliente:</strong> {{ venta.nombres_cliente }} {{ venta.apellidos_cliente }}</p>
       {% endif %}
       <p><strong>Método de pago:</strong> {{ venta.get_tipo_pago_display }}</p>
+      <p><strong>Emitido por:</strong> {{ venta.vendedor.username }}</p>
     </div>
 
     <table class="detalle">
@@ -81,11 +82,11 @@
         </tr>
       </thead>
       <tbody>
-        {% for detalle in venta.detalleventa_set.all %}
+        {% for detalle in detalles %}
         <tr>
           <td>{{ detalle.producto.nombre }}</td>
           <td>{{ detalle.cantidad }}</td>
-          <td class="text-right">S/ {{ detalle.producto.precio|floatformat:2 }}</td>
+          <td class="text-right">S/ {{ detalle.precio_unitario|floatformat:2 }}</td>
           <td class="text-right">S/ {{ detalle.subtotal|floatformat:2 }}</td>
         </tr>
         {% endfor %}
@@ -102,6 +103,11 @@
           <td class="text-right">IGV (18%):</td>
           <td class="text-right">S/ {{ igv|floatformat:2 }}</td>
         </tr>
+      {% else %}
+        <tr>
+          <td class="text-right">Subtotal sin IGV:</td>
+          <td class="text-right">S/ {{ base|floatformat:2 }}</td>
+        </tr>
       {% endif %}
       <tr class="total">
         <td class="text-right">Total:</td>
@@ -113,7 +119,7 @@
       <a href="{% url 'descargar_pdf' venta.id %}" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
         📄 Descargar PDF
       </a>
-    </div>    
+    </div>
 
     <p class="pie">
       {% if venta.tipo_comprobante == "factura" %}

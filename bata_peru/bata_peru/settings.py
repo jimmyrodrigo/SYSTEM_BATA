@@ -63,7 +63,7 @@ WSGI_APPLICATION = 'bata_peru.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # Esto indica la base de datos SQLite
+        'NAME': BASE_DIR / 'db.sqlite3', 
     }
 }
 

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Solicitudes de cierre de caja{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto mt-10 p-6 bg-white rounded shadow">
+  <h1 class="text-2xl font-bold mb-6">Solicitudes de cierre de caja pendientes</h1>
+
+  {% if solicitudes %}
+    <table class="min-w-full text-left text-sm border border-gray-300 rounded">
+      <thead class="bg-gray-200 text-gray-600 uppercase">
+        <tr>
+          <th class="py-3 px-4 border-b border-gray-300">Usuario</th>
+          <th class="py-3 px-4 border-b border-gray-300">Fecha apertura</th>
+          <th class="py-3 px-4 border-b border-gray-300">Monto inicial</th>
+          <th class="py-3 px-4 border-b border-gray-300">Descripción</th>
+          <th class="py-3 px-4 border-b border-gray-300">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for caja in solicitudes %}
+        <tr class="border-b border-gray-300 hover:bg-gray-50">
+          <td class="py-3 px-4">{{ caja.usuario.username }}</td>
+          <td class="py-3 px-4">{{ caja.fecha_apertura|date:"d/m/Y H:i" }}</td>
+          <td class="py-3 px-4">S/ {{ caja.saldo_inicial|floatformat:2 }}</td>
+          <td class="py-3 px-4">{{ caja.descripcion_cierre }}</td>
+          <td class="py-3 px-4">
+            <form method="POST" action="{% url 'aprobar_cierre_caja' caja.id %}">
+              {% csrf_token %}
+              <button name="accion" value="aprobar" class="bg-green-600 text-white px-3 py-1 rounded mr-2 hover:bg-green-700 transition">Aprobar</button>
+              <button name="accion" value="rechazar" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition">Rechazar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="text-center text-gray-500">No hay solicitudes pendientes.</p>
+  {% endif %}
+</div>
+{% endblock %}

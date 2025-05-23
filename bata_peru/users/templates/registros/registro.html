@@ -86,8 +86,11 @@
       <input type="text" name="numero_documento" id="numero_documento" placeholder="Número de documento" required
              class="w-full p-3 border rounded-md bg-white bg-opacity-80" maxlength="15">
 
-      <input type="date" name="fecha_nacimiento" id="fechaNacimiento" placeholder="Fecha de nacimiento"
-             class="w-full p-3 border rounded-md bg-white bg-opacity-80">
+      <label for="fechaNacimiento" class="block text-sm font-medium text-gray-700 mb-1">
+        Fecha de nacimiento
+      </label>
+      <input type="text" id="fechaNacimiento" name="fecha_nacimiento" placeholder="DD/MM/AAAA" maxlength="10"
+            class="w-full p-3 border rounded-md bg-white bg-opacity-80" />
 
       <input type="text" name="token" placeholder="Token de administrador" required
              class="w-full p-3 border rounded-md bg-white bg-opacity-80">
@@ -175,7 +178,33 @@
       }
     });
   </script>
-  
+  <script>
+  const input = document.getElementById('fechaNacimiento');
+
+  input.addEventListener('input', function(e) {
+    let value = this.value;
+
+    // Eliminar todo lo que no sea dígito
+    value = value.replace(/\D/g, '');
+
+    // Insertar barras '/' automáticamente
+    if (value.length > 2 && value.length <= 4) {
+      value = value.slice(0, 2) + '/' + value.slice(2);
+    } else if (value.length > 4) {
+      value = value.slice(0, 2) + '/' + value.slice(2, 4) + '/' + value.slice(4, 8);
+    }
+
+    this.value = value;
+  });
+
+  input.addEventListener('keydown', function(e) {
+    // Evitar que el cursor quede entre barras
+    const pos = this.selectionStart;
+    if ((pos === 3 || pos === 6) && e.key !== 'Backspace' && e.key !== 'Delete') {
+      this.selectionStart = this.selectionEnd = pos + 1;
+    }
+  });
+</script>
 
 </body>
 </html>

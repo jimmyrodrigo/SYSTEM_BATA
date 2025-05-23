@@ -38,7 +38,12 @@
           <option value="{{ m }}" {% if request.GET.marca == m %}selected{% endif %}>{{ m }}</option>
         {% endfor %}
       </select>
-
+      <select name="talla" class="p-3 border rounded shadow focus:outline-none focus:ring-2 focus:ring-red-400">
+        <option value="">Todas las marcas</option>
+        {% for t in talla %}
+          <option value="{{ t }}" {% if request.GET.talla == t %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
       <select name="color" class="p-3 border rounded shadow focus:outline-none focus:ring-2 focus:ring-red-400">
         <option value="">Todos los colores</option>
         {% for c in colores %}
@@ -74,9 +79,11 @@
           <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="h-48 w-full object-contain p-4">
           <div class="p-4 text-center">
             <h3 class="font-bold text-lg mb-1">{{ producto.nombre }}</h3>
+            {% if producto.talla %}
+              <p class="text-gray-600 text-sm">Talla: {{ producto.talla }}</p>
+            {% endif %}
             <p class="text-gray-500 text-sm">Stock: {{ producto.cantidad }}</p>
             <p class="text-gray-700 font-bold mb-4">S/ {{ producto.precio|floatformat:2 }}</p>
-
             <form method="post" action="{% url 'agregar_al_carrito' producto.id %}">
               {% if producto.cantidad == 0 %}
               <div class="flex justify-center items-center gap-2 mb-3">
@@ -126,7 +133,7 @@
           <li class="flex items-center justify-between py-2">
             <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" class="w-12 h-12 object-contain">
             <div class="flex-1 ml-3 text-sm">
-              <p>{{ item.producto.nombre }} x{{ item.cantidad }}</p>
+              <p>{{ item.producto.nombre }}{% if item.producto.talla %} (Talla: {{ item.producto.talla }}){% endif %} x{{ item.cantidad }}</p>
             </div>
             <span class="text-sm font-semibold">S/ {{ item.total|floatformat:2 }}</span>
             <form method="post" action="{% url 'eliminar_del_carrito' item.producto.id %}">
