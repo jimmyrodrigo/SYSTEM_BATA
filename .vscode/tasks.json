@@ -1,0 +1,28 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Daphne (ASGI server)",
+			"command": "daphne bata_peru.asgi:application",
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"type": "shell",
+			"label": "Django runserver (static files)",
+			"command": "python manage.py runserver --insecure",
+			"isBackground": true,
+			"group": "build"
+		},
+		{
+			"label": "Desarrollo Completo (Daphne + Static)",
+			"dependsOn": [
+				"Daphne (ASGI server)",
+				"Django runserver (static files)"
+			],
+			"dependsOrder": "sequence",
+			"problemMatcher": []
+		}
+	]
+}

@@ -11,12 +11,12 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/login/')),
 
     # Autenticación personalizada (login, registro, logout)
-    path('', include('users.auth_urls')),
+    path('', include('bata_peru.users.auth_urls')),
 
     # Dashboards por rol
-    path('usuarios/', include('users.dashboard_urls')),  # Admin dashboard
-    path('ventas/', include('ventas.urls')),             # Módulo ventas
-    path('inventario/', include('inventario.urls')),     # Módulo inventario
+    path('usuarios/', include('bata_peru.users.dashboard_urls')),  # Admin dashboard
+    path('ventas/', include('bata_peru.ventas.urls')),             # Módulo ventas
+    path('inventario/', include('bata_peru.inventario.urls')),     # Módulo inventario
 ]
 
 if settings.DEBUG:

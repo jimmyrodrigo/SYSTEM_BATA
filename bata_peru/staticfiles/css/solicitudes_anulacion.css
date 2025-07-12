@@ -1,0 +1,61 @@
+/* solicitudes_anulacion.css */
+body {
+  background: #f7f8fa;
+  font-family: 'Inter', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.solicitudes-anulacion-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 32px 40px;
+}
+.solicitudes-anulacion-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #d32f2f;
+  margin-bottom: 24px;
+  text-align: center;
+}
+.solicitudes-anulacion-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+.solicitudes-anulacion-table th {
+  background: #ffd6d6;
+  color: #d32f2f;
+  font-weight: 600;
+  padding: 12px 8px;
+  border-bottom: 2px solid #d32f2f;
+}
+.solicitudes-anulacion-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #eee;
+  color: #23252b;
+}
+.solicitudes-anulacion-table tr:last-child td {
+  border-bottom: none;
+}
+.solicitudes-anulacion-aprobar {
+  background: #43a047;
+  color: #fff;
+  border: none;
+  padding: 7px 18px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.solicitudes-anulacion-aprobar:hover {
+  background: #388e3c;
+}
+.solicitudes-anulacion-empty {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  margin-top: 32px;
+}

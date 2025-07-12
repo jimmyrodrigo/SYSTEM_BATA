@@ -1,0 +1,90 @@
+/* Estilos modernos para solicitud de anulación tipo sneaker shop */
+.anulacion-container {
+  max-width: 500px;
+  margin: 48px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  padding: 36px 32px 28px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.anulacion-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #181A20;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-left: 8px solid #FFD600;
+  padding-left: 16px;
+}
+.anulacion-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.anulacion-label {
+  font-weight: 600;
+  color: #23252B;
+  margin-bottom: 4px;
+}
+.anulacion-textarea {
+  border: 2px solid #E5E5E5;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  background: #F7F7F7;
+  color: #23252B;
+  resize: vertical;
+  min-height: 80px;
+  transition: border 0.2s;
+}
+.anulacion-textarea:focus {
+  border-color: #FFD600;
+  outline: none;
+}
+.anulacion-btn {
+  background: #FF3B3B;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(255,59,59,0.08);
+  transition: background 0.2s, color 0.2s;
+}
+.anulacion-btn:hover {
+  background: #FFD600;
+  color: #181A20;
+}
+.anulacion-link {
+  margin-top: 24px;
+  color: #23252B;
+  text-align: center;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: color 0.2s;
+  display: block;
+}
+.anulacion-link:hover {
+  color: #FFD600;
+}
+@media (max-width: 600px) {
+  .anulacion-container {
+    padding: 16px 4px 12px 4px;
+    margin: 18px 2px;
+  }
+  .anulacion-title {
+    font-size: 1.1rem;
+    padding-left: 8px;
+    margin-bottom: 16px;
+  }
+}

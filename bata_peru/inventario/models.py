@@ -27,6 +27,7 @@ class Producto(models.Model):
     fecha_ingreso = models.DateField(auto_now_add=True)
     talla = models.CharField(max_length=10, blank=True, null=True)  # Campo talla opcional
 
+
     def __str__(self):
         if self.talla:
             return f"{self.nombre} - Talla {self.talla}"

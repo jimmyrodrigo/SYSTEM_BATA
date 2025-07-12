@@ -5,102 +5,193 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Iniciar Sesión | Bata Perú</title>
-
-  <!-- Bootstrap 5.3 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <link rel="stylesheet" href="{% static 'css/app.css' %}">
-  <script src="https://cdn.tailwindcss.com"></script> <!-- si quieres seguir usando tailwind también -->
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 
-<body class="min-h-screen flex font-poppins">
-
-  <!-- Sección izquierda: Carrusel Bootstrap -->
-  <div class="w-7/12 h-screen overflow-hidden">
-    <div id="carouselBata" class="carousel slide h-100" data-bs-ride="carousel" data-bs-interval="3500">
-      <div class="carousel-inner h-100">
-    
-        <div class="carousel-item active h-100">
-          <img src="{% static 'carrusel/carrusel_fondo_1.jpg' %}" class="d-block w-100 h-100 object-cover" alt="Slide 1">
+<body style="background: #fff; min-height: 100vh; width: 100vw; margin: 0; padding: 0; font-family: 'Poppins', sans-serif;">
+  <div class="login-main-box" id="login-main-box" style="width: 100vw; height: 100vh; background: #fff; display: flex; overflow: hidden; position: relative;">
+    <div class="slide-container" style="width: 200vw; height: 100vh; display: flex; transition: transform 0.7s cubic-bezier(.77,0,.18,1);">
+      <!-- Login slide -->
+      <div class="login-slide" style="width: 100vw; height: 100vh; display: flex;">
+        <div class="login-left" id="login-form-box" style="width: 50vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fff;">
+          <div style="width: 100%; max-width: 540px;">
+            <h2 style="color: #181A20; font-weight: 700; font-size: 2.1rem; margin-bottom: 8px; text-align: center;">Bienvenido a</h2>
+            <img src="{% static 'img/logo_bata.png' %}" alt="Bata Perú" style="max-width:160px; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;">
+            <p style="color:#FFD600; margin-bottom: 18px; font-size: 1.1rem; text-align: center;">Inicia sesión para continuar</p>
+            <form method="POST" action="/login/" style="display: flex; flex-direction: row; gap: 32px; width: 100%; align-items: flex-start; flex-wrap: wrap; justify-content: center;">
+              <div style="flex:1; min-width:220px; display:flex; flex-direction:column; gap:20px;">
+                {% csrf_token %}
+                {% if messages %}
+                  <div id="toast-messages" class="auth-toast" style="background: #FFD600; color: #181A20; border-radius: 8px; padding: 8px 16px; margin-bottom: 8px; font-weight: 600;">
+                    {% for message in messages %}
+                      {{ message }}
+                    {% endfor %}
+                  </div>
+                {% endif %}
+                <label for="username" style="color: #181A20; font-weight: 500; text-align:left; width:100%; margin-bottom: 8px;">Usuario</label>
+                <input type="text" name="username" id="username" placeholder="Usuario" required style="padding: 12px 16px; border-radius: 24px; border: 1.5px solid #FFD600; background: #fff; font-size: 1.08rem; width:100%; margin-bottom: 18px;">
+              </div>
+              <div style="flex:1; min-width:220px; display:flex; flex-direction:column; gap:20px;">
+                <label for="password" style="color: #181A20; font-weight: 500; text-align:left; width:100%; margin-bottom: 8px;">Contraseña</label>
+                <input type="password" name="password" id="password" placeholder="Contraseña" required style="padding: 12px 16px; border-radius: 24px; border: 1.5px solid #FFD600; background: #fff; font-size: 1.08rem; width:100%; margin-bottom: 18px;">
+                <button type="submit" style="background: linear-gradient(90deg, #FFD600 60%, #fff700 100%); color: #181A20; font-weight: 700; border: none; border-radius: 24px; padding: 14px 0; font-size: 1.15rem; margin-top: 16px; margin-bottom: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.2s; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">🔒 Entrar</button>
+                <div class="extra-links" style="margin-top: 18px; text-align: center;">
+                  <a href="#" id="to-registro-link" style="color: #181A20; text-decoration: underline; font-size: 0.98rem;">¿No tienes cuenta? Regístrate aquí</a>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
-    
-        <div class="carousel-item h-100">
-          <img src="{% static 'carrusel/carrusel_fondo_2.jpeg' %}" class="d-block w-100 h-100 object-cover" alt="Slide 2">
-        </div>
-    
-        <div class="carousel-item h-100">
-          <img src="{% static 'carrusel/carrusel_fondo_3.jpg' %}" class="d-block w-100 h-100 object-cover" alt="Slide 3">
-        </div>
-    
-      </div>
-    
-      <!-- Botones control -->
-      <button class="carousel-control-prev" type="button" data-bs-target="#carouselBata" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#carouselBata" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-      </button>
-    
-    </div>    
-  </div>
-
-  <!-- Sección derecha: Formulario -->
-  <div class="flex items-center justify-center w-5/12 bg-white animate-fade-in-right">
-    <div class="w-full max-w-md p-10">
-
-      <div class="text-center mb-6">
-        <h2 class="text-3xl font-bold text-red-600">Bienvenido a</h2>
-        <img src="{% static 'img/logo_bata.png' %}" alt="Bata Perú" class="mx-auto mt-3 w-32">
-        <p class="text-gray-600 mt-2 text-sm">Inicia sesión para continuar</p>
-      </div>
-
-      <form method="POST" class="space-y-4">
-        {% csrf_token %}
-    
-        {% if messages %}
-        <div id="toast-messages" class="space-y-2 mb-4">
-          {% for message in messages %}
-            <div class="p-3 rounded-md text-sm text-white bg-red-500 shadow-md animate-fade-in-up">
-              {{ message }}
+        <div class="login-right" style="width: 50vw; height: 100vh; position: relative; overflow: hidden;">
+          <div id="carouselBataLogin" class="carousel slide w-100 h-100" data-bs-ride="carousel" data-bs-interval="3500" style="height: 100vh; width: 100%;">
+            <div class="carousel-inner h-100" style="height: 100vh;">
+              <div class="carousel-item active h-100">
+                <img src="{% static 'carrusel/carrusel_fondo_1.jpg' %}" class="d-block w-100 h-100 object-cover" alt="Slide 1" style="height: 100vh; width: 100%; object-fit: cover; transition: opacity 1s;">
+              </div>
+              <div class="carousel-item h-100">
+                <img src="{% static 'carrusel/carrusel_fondo_2.jpeg' %}" class="d-block w-100 h-100 object-cover" alt="Slide 2" style="height: 100vh; width: 100%; object-fit: cover; transition: opacity 1s;">
+              </div>
+              <div class="carousel-item h-100">
+                <img src="{% static 'carrusel/carrusel_fondo_3.jpg' %}" class="d-block w-100 h-100 object-cover" alt="Slide 3" style="height: 100vh; width: 100%; object-fit: cover; transition: opacity 1s;">
+              </div>
             </div>
-          {% endfor %}
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselBataLogin" data-bs-slide="prev" style="top:50%; transform:translateY(-50%);">
+              <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselBataLogin" data-bs-slide="next" style="top:50%; transform:translateY(-50%);">
+              <span class="carousel-control-next-icon"></span>
+            </button>
+          </div>
         </div>
-        
-        <script>
-          setTimeout(() => {
-            const toast = document.getElementById('toast-messages');
-            if (toast) {
-              toast.style.opacity = '0';
-              toast.style.transition = 'opacity 1s ease';
-            }
-          }, 3000);
-        </script>
-        {% endif %}        
-    
-        <input type="text" name="username" placeholder="Usuario" 
-               class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-400">
-        <input type="password" name="password" placeholder="Contraseña" 
-               class="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-400">
-    
-        <button type="submit" 
-                class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-md shadow-lg transition duration-300">
-          🔒 Entrar
-        </button>
-    
-        <div class="text-center mt-4">
-          <a href="{% url 'registro' %}" class="text-sm text-red-600 hover:underline">
-            ¿No tienes cuenta? Regístrate aquí
-          </a>
-        </div>
-    </form>
-    
+      </div>
 
+      <!-- Registro slide -->
+      <div class="registro-slide" style="width: 100vw; height: 100vh; display: flex;">
+        <div class="registro-left" style="width: 50vw; height: 100vh; position: relative; overflow: hidden;">
+          <div id="carouselBataRegistro" class="carousel slide w-100 h-100" data-bs-ride="carousel" data-bs-interval="3500" style="height: 100vh; width: 100%;">
+            <div class="carousel-inner h-100" style="height: 100vh;">
+              <div class="carousel-item active h-100">
+                <img src="{% static 'carrusel/carrusel_fondo_1.jpg' %}" class="d-block w-100 h-100 object-cover" alt="Slide 1" style="height: 100vh; width: 100%; object-fit: cover; transition: opacity 1s;">
+              </div>
+              <div class="carousel-item h-100">
+                <img src="{% static 'carrusel/carrusel_fondo_2.jpeg' %}" class="d-block w-100 h-100 object-cover" alt="Slide 2" style="height: 100vh; width: 100%; object-fit: cover; transition: opacity 1s;">
+              </div>
+              <div class="carousel-item h-100">
+                <img src="{% static 'carrusel/carrusel_fondo_3.jpg' %}" class="d-block w-100 h-100 object-cover" alt="Slide 3" style="height: 100vh; width: 100%; object-fit: cover; transition: opacity 1s;">
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselBataRegistro" data-bs-slide="prev" style="top:50%; transform:translateY(-50%);">
+              <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselBataRegistro" data-bs-slide="next" style="top:50%; transform:translateY(-50%);">
+              <span class="carousel-control-next-icon"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="registro-right" id="registro-form-box" style="width: 50vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fff;">
+          <div style="width: 100%; max-width: 540px;">
+            <h2 style="color: #181A20; font-weight: 700; font-size: 2.1rem; margin-bottom: 8px; text-align: center;">Crear Cuenta en</h2>
+            <img src="{% static 'img/logo_bata.png' %}" alt="Bata Perú" style="max-width:160px; margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;">
+            <p style="color:#FFD600; margin-bottom: 18px; font-size: 1.1rem; text-align: center;">Regístrate para acceder al sistema</p>
+            <form method="POST" style="display: flex; flex-direction: row; gap: 32px; width: 100%; align-items: flex-start; flex-wrap: wrap; justify-content: center;">
+              <div style="flex:1; min-width:220px; display:flex; flex-direction:column; gap:20px;">
+                <label for="username" style="color: #181A20; font-weight: 500; text-align:left; width:100%;">Usuario</label>
+                <input type="text" name="username" id="username" placeholder="Usuario" required style="padding: 12px 16px; border-radius: 24px; border: 1.5px solid #FFD600; background: #fff; font-size: 1.08rem; width:100%; margin-bottom: 8px;">
+                <label for="rol" style="color: #181A20; font-weight: 500; text-align:left; width:100%;">Rol</label>
+                <select name="rol" id="rol" required style="padding: 10px 16px; border-radius: 24px; border: 1.5px solid #FFD600; background: #fff; font-size: 1.08rem; width:100%; margin-bottom: 8px;">
+                  <option value="" disabled selected>Selecciona tu rol</option>
+                  <option value="empleado">Empleado de Ventas</option>
+                  <option value="inventario">Jefe de Inventario</option>
+                </select>
+              </div>
+              <div style="flex:1; min-width:220px; display:flex; flex-direction:column; gap:20px;">
+                <label for="numero_documento" style="color: #181A20; font-weight: 500; text-align:left; width:100%;">Número de documento</label>
+                <input type="text" name="numero_documento" id="numero_documento" placeholder="Número de documento" required maxlength="15" style="padding: 12px 16px; border-radius: 24px; border: 1.5px solid #FFD600; background: #fff; font-size: 1.08rem; width:100%; margin-bottom: 8px;">
+                <label for="fechaNacimiento" style="color: #181A20; font-weight: 500; text-align:left; width:100%;">Fecha de nacimiento</label>
+                <input type="text" id="fechaNacimiento" name="fecha_nacimiento" placeholder="DD/MM/AAAA" maxlength="10" style="padding: 12px 16px; border-radius: 24px; border: 1.5px solid #FFD600; background: #fff; font-size: 1.08rem; width:100%; margin-bottom: 8px;">
+                <label for="token" style="color: #181A20; font-weight: 500; text-align:left; width:100%;">Token de administrador</label>
+                <input type="text" name="token" id="token" placeholder="Token de administrador" required style="padding: 12px 16px; border-radius: 24px; border: 1.5px solid #FFD600; background: #fff; font-size: 1.08rem; width:100%; margin-bottom: 8px;">
+                <button type="submit" style="background: linear-gradient(90deg, #FFD600 60%, #fff700 100%); color: #181A20; font-weight: 700; border: none; border-radius: 24px; padding: 14px 0; font-size: 1.15rem; margin-top: 16px; margin-bottom: 16px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.2s; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">✍️ Registrar</button>
+                <div class="extra-links" style="margin-top: 18px; text-align: center;">
+                  <a href="#" id="to-login-link" style="color: #181A20; text-decoration: underline; font-size: 0.98rem;">¿Ya tienes cuenta? Inicia sesión aquí</a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-
-  <!-- Bootstrap 5.3 JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // SPA slide solo en escritorio, en móviles solo mostrar el formulario correspondiente
+    function setBodyViewClass() {
+      if (window.innerWidth <= 900) {
+        if (location.pathname.endsWith('/login')) {
+          document.body.classList.add('login-view');
+          document.body.classList.remove('registro-view');
+        } else if (location.pathname.endsWith('/registro')) {
+          document.body.classList.add('registro-view');
+          document.body.classList.remove('login-view');
+        }
+        // Redirección en móviles al hacer clic en los enlaces
+        document.getElementById('to-registro-link').onclick = function(e) {
+          e.preventDefault();
+          window.location.href = '/registro';
+        };
+        document.getElementById('to-login-link').onclick = function(e) {
+          e.preventDefault();
+          window.location.href = '/login';
+        };
+        // También manejar el enlace dentro del registro
+        var registroLoginLink = document.querySelector('.registro-slide .extra-links a#to-login-link');
+        if (registroLoginLink) {
+          registroLoginLink.onclick = function(e) {
+            e.preventDefault();
+            window.location.href = '/login';
+          };
+        }
+      } else {
+        document.body.classList.remove('login-view');
+        document.body.classList.remove('registro-view');
+        // SPA slide para escritorio
+        const slideContainer = document.querySelector('.slide-container');
+        function showLogin(push = true) {
+          slideContainer.style.transform = 'translateX(0)';
+          if (push) history.pushState({page: 'login'}, '', '/login');
+        }
+        function showRegistro(push = true) {
+          slideContainer.style.transform = 'translateX(-100vw)';
+          if (push) history.pushState({page: 'registro'}, '', '/registro');
+        }
+        document.getElementById('to-registro-link').onclick = function(e) {
+          e.preventDefault();
+          showRegistro();
+        };
+        document.getElementById('to-login-link').onclick = function(e) {
+          e.preventDefault();
+          showLogin();
+        };
+        window.addEventListener('popstate', function(e) {
+          if (location.pathname.endsWith('/registro')) {
+            showRegistro(false);
+          } else {
+            showLogin(false);
+          }
+        });
+        // Inicializa según la ruta
+        if (location.pathname.endsWith('/registro')) {
+          showRegistro(false);
+        } else {
+          showLogin(false);
+        }
+      }
+    }
+    setBodyViewClass();
+    window.addEventListener('resize', setBodyViewClass);
+  </script>
 </body>
 </html>

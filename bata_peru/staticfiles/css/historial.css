@@ -1,0 +1,124 @@
+/* Estilos modernos para historial de ventas tipo sneaker shop */
+body {
+  background: #F7F7F7;
+  font-family: 'Poppins', Arial, sans-serif;
+}
+.historial-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 32px 0;
+}
+.historial-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #181A20;
+  margin-bottom: 32px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-left: 8px solid #FFD600;
+  padding-left: 18px;
+}
+.historial-form {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 24px 32px;
+  margin-bottom: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-end;
+}
+.historial-form label {
+  font-weight: 600;
+  color: #23252B;
+  margin-bottom: 6px;
+}
+.historial-form input,
+.historial-form select {
+  border: 2px solid #E5E5E5;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  background: #F7F7F7;
+  color: #23252B;
+  margin-bottom: 8px;
+}
+.historial-form input:focus,
+.historial-form select:focus {
+  border-color: #FFD600;
+  outline: none;
+}
+.historial-form .historial-btn,
+.historial-form .historial-export {
+  background: #23252B;
+  color: #FFD600;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-right: 8px;
+  text-transform: uppercase;
+}
+.historial-form .historial-btn:hover,
+.historial-form .historial-export:hover {
+  background: #FFD600;
+  color: #23252B;
+}
+.historial-table {
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  overflow: hidden;
+  font-size: 1rem;
+}
+.historial-table thead {
+  background: #FFD600;
+  color: #181A20;
+  font-weight: 700;
+}
+.historial-table th, .historial-table td {
+  padding: 16px 12px;
+  text-align: left;
+}
+.historial-table tbody tr {
+  border-top: 1px solid #E5E5E5;
+  transition: background 0.2s;
+}
+.historial-table tbody tr:hover {
+  background: #FFFBEA;
+}
+.historial-table .anulada {
+  background: #F7F7F7;
+  color: #B0B3B8;
+  text-decoration: line-through;
+}
+.historial-table .estado-anulada {
+  color: #FF3B3B;
+  font-weight: 700;
+}
+.historial-table .estado-activa {
+  color: #1BC47D;
+  font-weight: 700;
+}
+.historial-table .estado-pendiente {
+  color: #FFD600;
+  font-weight: 700;
+}
+@media (max-width: 900px) {
+  .historial-container {
+    padding: 12px 2px;
+  }
+  .historial-form {
+    padding: 12px 6px;
+    gap: 12px;
+  }
+  .historial-table th, .historial-table td {
+    padding: 8px 4px;
+    font-size: 0.95rem;
+  }
+}

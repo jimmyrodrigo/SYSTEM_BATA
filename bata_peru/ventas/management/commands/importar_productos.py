@@ -3,8 +3,9 @@ import random
 from datetime import datetime, timedelta
 from django.core.files import File
 from django.core.management.base import BaseCommand
-from inventario.models import Producto, Categoria, Subcategoria
 from pathlib import Path
+from bata_peru.inventario.models import Producto, Categoria, Subcategoria
+
 
 class Command(BaseCommand):
     help = 'Importa productos desde un archivo CSV con cantidad incluida, fecha de ingreso aleatoria y talla'

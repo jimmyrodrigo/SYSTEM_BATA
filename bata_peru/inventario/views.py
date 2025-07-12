@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from users.decorators import role_required
+from bata_peru.users.decorators import role_required
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.db.models import F

@@ -1,0 +1,63 @@
+/* movimiento_caja.css */
+body {
+  background: #f7f8fa;
+  font-family: 'Inter', Arial, sans-serif;
+}
+.mov-caja-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 40px 48px;
+}
+.mov-caja-title {
+  font-size: 2.3rem;
+  font-weight: 700;
+  color: #23252b;
+  margin-bottom: 32px;
+  text-align: center;
+}
+.mov-caja-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 32px;
+}
+.mov-caja-table th {
+  background: #fff9e0;
+  color: #fbc02d;
+  font-weight: 600;
+  padding: 14px 10px;
+  border-bottom: 2px solid #fbc02d;
+  font-size: 1.05rem;
+}
+.mov-caja-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #eee;
+  color: #23252b;
+  font-size: 1rem;
+}
+.mov-caja-table tr:last-child td {
+  border-bottom: none;
+}
+.mov-caja-status {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.mov-caja-status-abierta {
+  background: #e0f7fa;
+  color: #00897b;
+}
+.mov-caja-status-cerrada {
+  background: #ececec;
+  color: #757575;
+}
+.mov-caja-empty {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  margin-top: 32px;
+}

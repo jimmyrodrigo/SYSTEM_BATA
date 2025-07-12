@@ -1,46 +1,124 @@
 {% extends "ventas/base_dashboard.html" %}
+{% load static %}
 {% load tz %}
 {% block title %}Estadísticas{% endblock %}
 
 {% block content %}
-<h2 class="text-2xl font-bold mb-4">📊 Estadísticas Personales</h2>
-
-<!-- FILTRO POR RANGO -->
-<form method="GET" class="mb-6 bg-white p-4 rounded shadow flex flex-col md:flex-row items-end md:items-center gap-4">
-  <div>
-    <label class="block text-sm font-medium text-gray-600">Desde:</label>
-    <input type="date" name="fecha_inicio" value="{{ request.GET.fecha_inicio }}" class="border rounded px-2 py-1 w-full">
+<link rel="stylesheet" href="{% static 'css/estadisticas.css' %}" />
+<div class="estadisticas-container">
+  <h2 class="estadisticas-title">
+    <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;">
+      <rect x="4" y="8" width="40" height="32" rx="6" fill="#FFD600" stroke="#181A20" stroke-width="2"/>
+      <rect x="12" y="16" width="24" height="4" rx="2" fill="#181A20"/>
+      <rect x="12" y="24" width="16" height="3" rx="1.5" fill="#B0B3B8"/>
+      <rect x="12" y="30" width="12" height="3" rx="1.5" fill="#B0B3B8"/>
+      <path d="M32 32 Q36 24 40 32" stroke="#FF3B3B" stroke-width="2.5" fill="none"/>
+      <circle cx="36" cy="32" r="2.5" fill="#FF3B3B"/>
+    </svg>
+    Estadísticas Personales
+  </h2>
+  <!-- FILTRO POR RANGO -->
+  <form method="GET" class="estadisticas-form" id="form-filtros-estadisticas">
+    <div>
+      <label>Desde:</label>
+      <input type="date" name="fecha_inicio" value="{{ request.GET.fecha_inicio }}">
+    </div>
+    <div>
+      <label>Hasta:</label>
+      <input type="date" name="fecha_fin" value="{{ request.GET.fecha_fin }}">
+    </div>
+    <button type="submit" class="estadisticas-btn">🔍 Filtrar</button>
+    <button type="button" class="estadisticas-btn estadisticas-btn-clear" id="btn-borrar-filtros" style="margin-left:10px;background:#eee;color:#222;border:1px solid #bbb;">🧹 Borrar filtros</button>
+  </form>
+  <!-- RESULTADO DEL FILTRO -->
+  {% if total_personalizado != None %}
+  <div class="estadisticas-alerta">
+    <strong>Ganancia en el rango seleccionado:</strong>
+    <p class="valor">S/ {{ total_personalizado|floatformat:2 }}</p>
   </div>
-  <div>
-    <label class="block text-sm font-medium text-gray-600">Hasta:</label>
-    <input type="date" name="fecha_fin" value="{{ request.GET.fecha_fin }}" class="border rounded px-2 py-1 w-full">
+  {% endif %}
+  <!-- ESTADÍSTICAS RESUMIDAS -->
+  <div class="estadisticas-resumen">
+    <div class="estadisticas-card">
+      <h3>
+        {% if filtro_aplicado %}Hoy en el rango{% else %}Hoy{% endif %}
+      </h3>
+      <p class="valor" id="valor-hoy">S/ {{ total_hoy|floatformat:2 }}</p>
+    </div>
+    <div class="estadisticas-card">
+      <h3>
+        {% if filtro_aplicado %}Esta semana en el rango{% else %}Esta semana{% endif %}
+      </h3>
+      <p class="valor" id="valor-semana">S/ {{ total_semana|floatformat:2 }}</p>
+    </div>
+    <div class="estadisticas-card">
+      <h3>
+        {% if filtro_aplicado %}Este mes en el rango{% else %}Este mes{% endif %}
+      </h3>
+      <p class="valor" id="valor-mes">S/ {{ total_mes|floatformat:2 }}</p>
+    </div>
   </div>
-  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-    🔍 Filtrar
-  </button>
-</form>
 
-<!-- RESULTADO DEL FILTRO -->
-{% if total_personalizado != None %}
-<div class="bg-yellow-100 p-4 mb-4 rounded text-center">
-  <strong class="text-yellow-800">Ganancia en el rango seleccionado:</strong>
-  <p class="text-yellow-700 text-xl font-bold mt-1">S/ {{ total_personalizado|floatformat:2 }}</p>
+  {% if filtro_aplicado %}
+  <div class="estadisticas-compras">
+    <h3 class="estadisticas-compras-title">Compras realizadas en el rango seleccionado</h3>
+    {% if compras %}
+    <table class="estadisticas-compras-table">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Cliente</th>
+          <th>Total</th>
+          <th>Tipo Pago</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for venta in compras %}
+        <tr>
+          <td>{{ venta.fecha|date:"Y-m-d H:i" }}</td>
+          <td>{% if venta.tipo_comprobante == "factura" and venta.razon_social %}{{ venta.razon_social }}{% else %}{{ venta.nombres_cliente }} {{ venta.apellidos_cliente }}{% endif %}</td>
+          <td>S/ {{ venta.total|floatformat:2 }}</td>
+          <td>{{ venta.get_tipo_pago_display }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div style="padding:24px;text-align:center;color:#888;">No hay compras en este rango.</div>
+    {% endif %}
+  </div>
+  {% endif %}
 </div>
-{% endif %}
+<script>
+// Animación de conteo para los valores de estadísticas
+function animateValue(id, start, end, duration) {
+  const obj = document.getElementById(id);
+  if (!obj) return;
+  let startTimestamp = null;
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    const value = start + (end - start) * progress;
+    obj.textContent = 'S/ ' + value.toFixed(2);
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    }
+  };
+  window.requestAnimationFrame(step);
+}
+document.addEventListener('DOMContentLoaded', function() {
+  animateValue('valor-hoy', 0, parseFloat(document.getElementById('valor-hoy').textContent.replace('S/','')), 900);
+  animateValue('valor-semana', 0, parseFloat(document.getElementById('valor-semana').textContent.replace('S/','')), 1200);
+  animateValue('valor-mes', 0, parseFloat(document.getElementById('valor-mes').textContent.replace('S/','')), 1500);
 
-<!-- ESTADÍSTICAS RESUMIDAS -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-  <div class="bg-white p-6 rounded shadow text-center">
-    <h3 class="text-lg font-semibold text-gray-700">Hoy</h3>
-    <p class="text-2xl font-bold text-blue-600">S/ {{ total_hoy|floatformat:2 }}</p>
-  </div>
-  <div class="bg-white p-6 rounded shadow text-center">
-    <h3 class="text-lg font-semibold text-gray-700">Esta Semana</h3>
-    <p class="text-2xl font-bold text-green-600">S/ {{ total_semana|floatformat:2 }}</p>
-  </div>
-  <div class="bg-white p-6 rounded shadow text-center">
-    <h3 class="text-lg font-semibold text-gray-700">Este Mes</h3>
-    <p class="text-2xl font-bold text-purple-600">S/ {{ total_mes|floatformat:2 }}</p>
-  </div>
-</div>
+  // Borrar filtros: limpia los campos y recarga sin parámetros
+  document.getElementById('btn-borrar-filtros').addEventListener('click', function() {
+    const form = document.getElementById('form-filtros-estadisticas');
+    form.querySelector('input[name="fecha_inicio"]').value = '';
+    form.querySelector('input[name="fecha_fin"]').value = '';
+    // Redirige a la misma URL sin parámetros GET
+    window.location.href = window.location.pathname;
+  });
+});
+</script>
 {% endblock %}

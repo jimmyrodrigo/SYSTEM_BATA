@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Movimientos de Caja{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/movimiento_caja.css' %}">
+<div class="mov-caja-container">
+  <h1 class="mov-caja-title">Historial de Movimientos de Caja</h1>
+  <div style="margin-bottom:40px;">
+    <h2 style="font-size:1.3rem;font-weight:600;color:#fbc02d;margin-bottom:18px;">Cajas</h2>
+    <table class="mov-caja-table">
+      <thead>
+        <tr>
+          <th>ID Caja</th>
+          <th>Usuario</th>
+          <th>Fecha Apertura</th>
+          <th>Fecha Cierre</th>
+          <th>Saldo Inicial</th>
+          <th>Ingresos</th>
+          <th>Egresos</th>
+          <th>Saldo Final</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for caja in cajas %}
+        <tr>
+          <td>{{ caja.id }}</td>
+          <td>{{ caja.usuario.username }}</td>
+          <td>{{ caja.fecha_apertura|date:"d/m/Y H:i" }}</td>
+          <td>{{ caja.fecha_cierre|default:"-"|date:"d/m/Y H:i" }}</td>
+          <td>S/ {{ caja.saldo_inicial|floatformat:2 }}</td>
+          <td>S/ {{ caja.ingresos|floatformat:2 }}</td>
+          <td>S/ {{ caja.egresos|floatformat:2 }}</td>
+          <td style="font-weight:600;">S/ {{ caja.saldo_final|floatformat:2 }}</td>
+          <td>
+            {% if caja.esta_abierta %}
+              <span class="mov-caja-status mov-caja-status-abierta">Abierta</span>
+            {% else %}
+              <span class="mov-caja-status mov-caja-status-cerrada">Cerrada</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" class="mov-caja-empty">No hay cajas registradas.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h2 style="font-size:1.3rem;font-weight:600;color:#fbc02d;margin-bottom:18px;">Movimientos</h2>
+    <table class="mov-caja-table">
+      <thead>
+        <tr>
+          <th>Caja</th>
+          <th>Tipo</th>
+          <th>Descripción</th>
+          <th>Cliente</th>
+          <th>Pago</th>
+          <th>Vuelto</th>
+          <th>Monto</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mov in movimientos %}
+        <tr>
+          <td>{{ mov.caja.usuario.username }}</td>
+          <td style="text-transform:capitalize;">{{ mov.tipo }}</td>
+          <td>{{ mov.descripcion }}</td>
+          <td>
+            {% if mov.nombre_empresa %}
+                {{ mov.nombre_empresa }}
+            {% else %}
+                {{ mov.nombre_cliente }}
+            {% endif %}
+          </td>
+          <td>S/ {{ mov.PagoCliente|floatformat:2 }}</td>
+          <td>S/ {{ mov.VueltoCliente|floatformat:2 }}</td>
+          <td style="font-weight:600;">S/ {{ mov.monto|floatformat:2 }}</td>
+          <td>{{ mov.fecha|date:"d/m/Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8" class="mov-caja-empty">No hay movimientos registrados.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<link rel="stylesheet" href="{% static 'css/movimiento_caja.css' %}">
+{% endblock %}

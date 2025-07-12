@@ -1,96 +1,410 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>{% block title %}Ventas - Sistema Bata Perú{% endblock %}</title>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="{% static 'css/app.css' %}">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    .bg-bata-red { background-color: rgb(255, 5, 5); }
+    body {
+      background: #F7F7F7;
+      color: #23252B;
+      font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .dashboard-header {
+      background: #fff;
+      border-bottom: 2px solid #23252B;
+      padding: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      transition: box-shadow 0.2s;
+    }
+    .dashboard-header-container {
+      display: grid;
+      grid-template-columns: 220px 1fr auto;
+      align-items: center;
+      margin: 0;
+      padding: 0 32px;
+      width: 90%;
+      max-width: none;
+    }
+    .dashboard-logo {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      height: 80px;
+      margin-right: 18px;
+    }
+    .dashboard-logo-svg {
+      width: 120px;
+      height: 48px;
+      display: block;
+    }
+    .dashboard-header-nav {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .dashboard-category {
+      color: #23252B;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 0 18px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s;
+      text-decoration: none;
+      height: 80px;
+      display: flex;
+      align-items: center;
+    }
+    .dashboard-category.active,
+    .dashboard-category:hover {
+      color: #FFD600;
+    }
+    .dashboard-category.active::after,
+    .dashboard-category:hover::after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      bottom: 12px;
+      width: 100%;
+      height: 4px;
+      background: #FFD600;
+      border-radius: 2px;
+    }
+    .dashboard-btn {
+      background: #FFD600;
+      color: #23252B;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-left: 18px;
+      transition: background 0.2s, color 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .dashboard-btn:hover {
+      background: #23252B;
+      color: #FFD600;
+      border: 1px solid #FFD600;
+    }
+    .dashboard-section {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 32px 16px;
+      background: #fff;
+      min-height: 70vh;
+    }
+    .dashboard-card {
+      background: #F7F7F7;
+      border: 2px solid #FFD600;
+      border-radius: 8px;
+      padding: 18px 24px;
+      margin-bottom: 12px;
+      color: #23252B;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .card-title {
+      color: #FFD600;
+      font-size: 1.2rem;
+      font-weight: 900;
+      margin-right: 8px;
+    }
+    .card-desc {
+      color: #23252B;
+      font-size: 1rem;
+    }
+    footer {
+      background: #23252B;
+      color: #FFD600;
+      text-align: center;
+      padding: 24px 0 12px 0;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* Responsive header/dashboard */
+    @media (max-width: 900px) {
+      .dashboard-header-container {
+        grid-template-columns: 120px 1fr auto;
+        padding: 0 10px;
+        height: 60px;
+        width: 100%;
+      }
+      .dashboard-logo {
+        height: 60px;
+        margin-right: 8px;
+      }
+      .dashboard-logo-svg {
+        width: 80px;
+        height: 32px;
+      }
+      .dashboard-header-nav {
+        gap: 12px;
+      }
+      .dashboard-category {
+        font-size: 0.95rem;
+        padding: 0 8px;
+        height: 60px;
+      }
+      .dashboard-btn {
+        padding: 8px 12px;
+        font-size: 0.95rem;
+        margin-left: 8px;
+      }
+    }
+    @media (max-width: 600px) {
+      .dashboard-header-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2vw;
+        height: 48px;
+        width: 100%;
+      }
+      .dashboard-logo {
+        height: 40px;
+        margin-right: 0;
+      }
+      .dashboard-logo-svg {
+        width: 50px;
+        height: 20px;
+      }
+      .dashboard-header-nav {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 2vw;
+        align-items: center;
+        justify-content: flex-end;
+        width: 100%;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .dashboard-header-nav::-webkit-scrollbar {
+        display: none;
+      }
+      .dashboard-category {
+        font-size: 0.8rem;
+        padding: 0 2px;
+        height: 36px;
+        min-width: 80px;
+        white-space: nowrap;
+      }
+      .dashboard-btn {
+        padding: 5px 6px;
+        font-size: 0.8rem;
+        margin-left: 2px;
+      }
+    }
   </style>
 </head>
 
-<body class="min-h-screen font-poppins flex flex-col md:flex-row">
-
-  <!-- Navbar pequeña para móviles -->
-  <header class="bg-bata-red text-white p-4 flex justify-between items-center md:hidden z-20">
-    <div class="font-bold text-lg">Ventas | Bata Perú</div>
-    <button id="menuToggle" class="text-2xl focus:outline-none z-20">☰</button> <!-- Button to toggle sidebar -->
+<body>
+  <!-- Encabezado Dashboard -->
+  <header class="dashboard-header animate-fade-in-up">
+    <div class="dashboard-header-container">
+      <div class="dashboard-logo">
+        <svg class="dashboard-logo-svg" viewBox="0 0 120 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="120" height="48" rx="12" fill="#FFD600"/>
+          <text x="60" y="30" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-size="28" font-weight="bold" fill="#181A20">BATA</text>
+        </svg>
+      </div>
+      <nav class="dashboard-header-nav">
+        <a href="{% url 'catalogo_productos' %}" class="dashboard-category">Catálogo</a>
+        <a href="{% url 'historial_ventas' %}" class="dashboard-category">Historial de Ventas</a>
+        <a href="{% url 'estadisticas_ventas' %}" class="dashboard-category">Estadísticas</a>
+        <a href="{% url 'caja_usuario' %}" class="dashboard-category">Caja Usuario</a>
+        <form method="POST" action="{% url 'logout' %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="dashboard-btn">Cerrar Sesión</button>
+        </form>
+      </nav>
+    </div>
   </header>
 
-  <!-- Sidebar (para pantallas pequeñas, oculto por defecto) -->
-  <aside id="sidebar" class="w-full sm:w-60 bg-bata-red text-white flex flex-col min-h-fit sm:min-h-screen hidden sm:block transition-transform duration-300 ease-in-out z-10">
-
-    <div class="p-4 sm:p-6 flex flex-col items-center border-b border-red-400">
-      <img src="{% static 'img/logo_blanco.png' %}" alt="Logo Bata Perú" class="w-20 h-20 sm:w-24 sm:h-24 object-contain">
-    </div>
-
-    <nav class="flex-1 p-4 sm:p-6 space-y-3 sm:space-y-4">
-      <a href="{% url 'catalogo_productos' %}" 
-         class="block py-2 px-3 sm:px-4 rounded-md hover:bg-white hover:text-red-500 transition font-semibold">
-        📦 Catálogo
-      </a>
-
-      <a href="{% url 'historial_ventas' %}" 
-         class="block py-2 px-3 sm:px-4 rounded-md hover:bg-white hover:text-red-500 transition font-semibold">
-        📈 Historial de Ventas
-      </a>
-
-      <a href="{% url 'estadisticas_ventas' %}" 
-         class="block py-2 px-3 sm:px-4 rounded-md hover:bg-white hover:text-red-500 transition font-semibold">
-        📊 Estadísticas
-      </a>
-
-      <a href="{% url 'caja_usuario' %}" 
-      class="block py-2 px-3 sm:px-4 rounded-md hover:bg-white hover:text-red-500 transition font-semibold">
-     Caja Usuario
-   </a>
-    </nav>
-
-    <div class="p-4 sm:p-6 border-t border-red-400">
-      <form method="POST" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit" 
-                class="w-full py-2 px-3 sm:px-4 bg-white text-black font-bold rounded-md hover:bg-red-100 hover:text-red-700 transition">
-          🚪 Cerrar Sesión
-        </button>
-      </form>
-    </div>
-
-  </aside>
-
-  <!-- Contenido Principal -->
-  <main class="flex-1 h-screen overflow-y-auto p-8 bg-gray-100">
+  <!-- Sección principal -->
+  <main class="dashboard-section animate-fade-in-up">
     {% if messages %}
-  <div class="space-y-2 mb-6">
-    {% for message in messages %}
-      <div class="px-4 py-3 rounded shadow text-white font-medium
-                  {% if message.tags == 'success' %} bg-green-600
-                  {% elif message.tags == 'error' %} bg-red-600
-                  {% else %} bg-blue-600 {% endif %}">
-        {{ message }}
+    <div style="margin-bottom: 24px;">
+      {% for message in messages %}
+      <div class="dashboard-card animate-fade-in-right" style="margin-bottom: 12px;">
+        <span class="card-title">
+          {% if message.tags == 'success' %}✔ Éxito{% elif message.tags == 'error' %}✖ Error{% else %}ℹ Info{% endif %}
+        </span>
+        <span class="card-desc">{{ message }}</span>
       </div>
-    {% endfor %}
-  </div>
-{% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
     {% block content %}
+    <!-- ...contenido de cada página... -->
     {% endblock %}
   </main>
 
-  <!-- Script para abrir/cerrar el menú -->
-  <script>
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
+  <!-- Footer -->
+  <footer style="background: #181A20; color: #B0B3B8; text-align: center; padding: 24px 0 12px 0; font-size: 1rem;">
+    &copy; {{ now|date:"Y" }} Bata Perú. Todos los derechos reservados.
+  </footer>
 
-    // Toggle el sidebar cuando se haga clic en el menú
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('hidden'); // Ocultar o mostrar el sidebar en móviles
+  <!-- Chat privado cajero-admin (azul flotante) -->
+  <button id="open-chatbot-btn" style="position:fixed;bottom:32px;right:32px;z-index:1200;background:#2563eb;color:white;border:none;border-radius:50%;width:60px;height:60px;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+    💬
+  </button>
+  <div id="chatbot-modal" style="display:none;position:fixed;bottom:100px;right:40px;width:350px;max-width:95vw;height:480px;z-index:1201;background:white;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.18);overflow:hidden;flex-direction:column;">
+    <div style="background:#2563eb;color:white;padding:14px 18px;font-weight:bold;display:flex;align-items:center;justify-content:space-between;">
+      <span>Chat Privado</span>
+      <button id="close-chatbot-btn" style="background:none;border:none;color:white;font-size:22px;cursor:pointer;">&times;</button>
+    </div>
+    <select id="chat-user-select" style="border-radius: 8px; padding: 4px 8px; font-size: 1rem; margin:12px;">
+      <option value="">Selecciona destinatario</option>
+      <option value="{{ admin_user.id }}">{{ admin_user.username }} (admin)</option>
+    </select>
+    <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 12px; background: #F7F7F7;"></div>
+    <form id="chat-form" style="display: flex; gap: 8px; padding: 12px; border-top: 1px solid #eee; background: #fff;">
+      <input type="text" id="chat-input" placeholder="Escribe un mensaje..." style="flex: 1; border-radius: 8px; border: 1px solid #2563eb; padding: 8px; font-size: 1rem;">
+      <button type="submit" id="chat-send-btn" style="background:#2563eb;color:white;border:none;border-radius:8px;padding:8px 16px;font-weight:bold;">Enviar</button>
+    </form>
+  </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // --- WebSocket para notificaciones admin (si eres admin) ---
+  let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+  let adminSocket = new WebSocket(ws_scheme + '://' + window.location.host + '/ws/admin_notifications/');
+
+  adminSocket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    // Usar solo 'tipo' para identificar el evento
+    const tipo = data.tipo;
+    // Solicitudes de apertura/cierre de caja
+    if (tipo === 'nueva_apertura' || tipo === 'nueva_cierre' || tipo === 'respuesta_cierre') {
+      if (typeof data.nuevas_cierre_count !== 'undefined') {
+        setBadge('badge-cierre', data.nuevas_cierre_count);
+      } else {
+        incrementarBadge('badge-cierre');
+      }
+    }
+    // Movimiento de caja
+    if (tipo === 'nueva_movimiento') {
+      incrementarBadge('badge-movimiento');
+    }
+    // Solicitudes de anulación de venta (nueva o respuesta)
+    if (tipo === 'nueva_anulacion' || tipo === 'respuesta_anulacion') {
+      if (typeof data.nuevas_anulacion_count !== 'undefined') {
+        setBadge('badge-anulacion', data.nuevas_anulacion_count);
+      } else {
+        incrementarBadge('badge-anulacion');
+      }
+    }
+  };
+
+  function incrementarBadge(badgeId) {
+    const badge = document.getElementById(badgeId);
+    if (badge) {
+      let count = parseInt(badge.textContent, 10);
+      if (isNaN(count) || count < 1) {
+        count = 1;
+      } else {
+        count += 1;
+      }
+      badge.textContent = count;
+      badge.style.display = 'inline';
+    }
+  }
+
+  function setBadge(badgeId, count) {
+    const badge = document.getElementById(badgeId);
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline' : 'none';
+    }
+  }
+
+  // --- WebSocket para chat privado cajero-admin ---
+  const openBtn = document.getElementById('open-chatbot-btn');
+  const modal = document.getElementById('chatbot-modal');
+  const closeBtn = document.getElementById('close-chatbot-btn');
+  const chatUserSelect = document.getElementById('chat-user-select');
+  const chatMessages = document.getElementById('chat-messages');
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+  let socket = null;
+  let destinatarioId = null;
+
+  function openSocketIfReady() {
+    destinatarioId = chatUserSelect.value;
+    if (socket) socket.close();
+    chatMessages.innerHTML = '';
+    if (destinatarioId) {
+      let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+      socket = new WebSocket(`${ws_scheme}://${window.location.host}/ws/chat/${destinatarioId}/`);
+      socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        let msgHtml = `<div style='margin-bottom:8px;'><b>${data.usuario}:</b> ${data.mensaje}</div>`;
+        if (data.imagen) msgHtml += `<br><img src='${data.imagen}' style='max-width:120px; border-radius:8px;'>`;
+        chatMessages.innerHTML += msgHtml;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      };
+    }
+  }
+
+  if (openBtn && modal && closeBtn && chatUserSelect && chatMessages && chatForm && chatInput) {
+    openBtn.onclick = () => {
+      modal.style.display = 'flex';
+      setTimeout(() => { chatInput.focus(); }, 200);
+    };
+    closeBtn.onclick = () => {
+      modal.style.display = 'none';
+    };
+    window.addEventListener('click', function(e) {
+      if (modal.style.display === 'flex' && !modal.contains(e.target) && e.target !== openBtn) {
+        modal.style.display = 'none';
+      }
     });
-  </script>
 
+    chatUserSelect.addEventListener('change', openSocketIfReady);
+
+    // Si solo hay un destinatario (por ejemplo, cajero), seleccionarlo automáticamente
+    if (chatUserSelect.options.length === 2) {
+      chatUserSelect.selectedIndex = 1;
+      openSocketIfReady();
+    }
+
+    chatForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (socket && destinatarioId && chatInput.value.trim()) {
+        socket.send(JSON.stringify({
+          mensaje: chatInput.value,
+          imagen: null
+        }));
+        chatInput.value = '';
+      }
+    });
+  }
+});
+</script>
 </body>
 </html>
+

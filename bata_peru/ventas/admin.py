@@ -1,5 +1,10 @@
+
 from django.contrib import admin
-from .models import Venta, DetalleVenta, Caja, MovimientoCaja
+from .models import ChatMessage, Venta, DetalleVenta, Caja, MovimientoCaja
+
+@admin.register(ChatMessage)
+class ChatMessageAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'rol', 'mensaje', 'timestamp')
 
 @admin.register(Venta)
 class VentaAdmin(admin.ModelAdmin):

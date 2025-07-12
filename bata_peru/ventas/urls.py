@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views import (
     ventas_dashboard,
     historial_ventas,
@@ -8,14 +9,20 @@ from .views import (
     catalogo_productos,
     agregar_al_carrito,
     eliminar_del_carrito,
+    carrito,
+    modificar_cantidad_carrito,
     realizar_compra,
     caja_usuario,
     consultar_dni,
     consultar_ruc,
-    solicitar_anulacion_venta
+    solicitar_anulacion_venta,
+    obtener_productos_api,
+    chatbot,
+    estado_solicitud_caja,
 )
 
 urlpatterns = [
+    path('estado-solicitud-caja/', estado_solicitud_caja, name='estado_solicitud_caja'),
     path('dashboard/', ventas_dashboard, name='ventas_dashboard'),
     path('historial/', historial_ventas, name='historial_ventas'),
     path('caja/', caja_usuario, name='caja_usuario'),
@@ -26,7 +33,11 @@ urlpatterns = [
     path('api/consultar-dni/', consultar_dni, name='consultar_dni'),
     path('api/consultar-ruc/', consultar_ruc, name='consultar_ruc'),
     path('catalogo/', catalogo_productos, name='catalogo_productos'),
+    path('carrito/', carrito, name='carrito'),
+    path('carrito/modificar/<int:producto_id>/', modificar_cantidad_carrito, name='modificar_cantidad_carrito'),
     path('carrito/agregar/<int:producto_id>/', agregar_al_carrito, name='agregar_al_carrito'),
     path('carrito/eliminar/<int:producto_id>/', eliminar_del_carrito, name='eliminar_del_carrito'),
     path('realizar-compra/', realizar_compra, name='realizar_compra'),
+    path('api/productos/', obtener_productos_api, name='obtener_productos_api'),
+    path('chatbot/', chatbot, name='chatbot'),
 ]
