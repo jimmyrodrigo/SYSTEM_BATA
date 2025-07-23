@@ -1,5 +1,10 @@
+
 from django.contrib import admin
-from .models import Venta, DetalleVenta
+from .models import ChatMessage, Venta, DetalleVenta, Caja, MovimientoCaja
+
+@admin.register(ChatMessage)
+class ChatMessageAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'rol', 'mensaje', 'timestamp')
 
 @admin.register(Venta)
 class VentaAdmin(admin.ModelAdmin):
@@ -14,11 +19,15 @@ class DetalleVentaAdmin(admin.ModelAdmin):
     list_display = ('venta', 'producto', 'cantidad')
     search_fields = ('producto__nombre', 'venta__nombres_cliente')
 
-from django.contrib import admin
-from .models import Caja
 
 @admin.register(Caja)
 class CajaAdmin(admin.ModelAdmin):
     list_display = ('usuario', 'fecha_apertura', 'fecha_cierre', 'saldo_inicial', 'ingresos', 'egresos', 'saldo_final', 'esta_abierta')
     list_filter = ('usuario', 'esta_abierta', 'fecha_apertura')
     search_fields = ('usuario__username',)
+
+@admin.register(MovimientoCaja)
+class MovimientoCaja(admin.ModelAdmin):
+    list_display = ('caja', 'tipo', 'monto', 'descripcion', 'tipo', 'fecha')
+    list_filter = ('tipo','monto','descripcion')
+    ordering = ('-fecha',)

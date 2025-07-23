@@ -14,3 +14,4 @@ class UsuarioPersonalizado(AbstractUser):
     numero_documento = models.CharField(max_length=15, blank=True, null=True)
     fecha_nacimiento = models.DateField(blank=True, null=True)
     token_admin = models.CharField(max_length=100, blank=True, null=True)
+

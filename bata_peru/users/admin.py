@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import UsuarioPersonalizado
 
-# Register your models here.
+@admin.register(UsuarioPersonalizado)
+class UsuarioPersonalizado(admin.ModelAdmin):
+    lisst_display = ('id', "rol", "tipo_documento")

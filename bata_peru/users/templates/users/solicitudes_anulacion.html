@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Solicitudes de Anulación de Ventas{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/solicitudes_anulacion.css' %}">
+<div class="solicitudes-anulacion-container">
+  <h1 class="solicitudes-anulacion-title">Solicitudes de Anulación de Ventas</h1>
+  {% if solicitudes %}
+    <table class="solicitudes-anulacion-table">
+      <thead>
+        <tr>
+          <th>Venta ID</th>
+          <th>Cliente</th>
+          <th>Comentario</th>
+          <th>Fecha Solicitud</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for solicitud in solicitudes %}
+        <tr>
+          <td>{{ solicitud.venta.id }}</td>
+          <td>{{ solicitud.venta.nombres_cliente }} {{ solicitud.venta.apellidos_cliente }}</td>
+          <td>{{ solicitud.comentario }}</td>
+          <td>{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
+          <td>
+            <form method="POST" action="{% url 'aprobar_anulacion_venta' solicitud.id %}">
+              {% csrf_token %}
+              <button type="submit" class="solicitudes-anulacion-aprobar">Aprobar</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="solicitudes-anulacion-empty">No hay solicitudes pendientes.</div>
+  {% endif %}
+</div>
+{% endblock %}

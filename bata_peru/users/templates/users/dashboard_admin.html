@@ -1,9 +1,234 @@
+
 {% extends "base.html" %}
-{% block title %}Dashboard Admin{% endblock %}
+{% load static %}
+{% block title %}Dashboard Administrador{% endblock %}
 {% block content %}
-<div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded shadow">
-  <h1 class="text-2xl font-bold mb-4">Bienvenido, Administrador</h1>
-  <p class="mb-2">Aquí podrás gestionar usuarios, ver estadísticas de rendimiento y controlar el sistema.</p>
-  <!-- Aquí irán enlaces a gestión de usuarios, reportes, etc -->
+<link rel="stylesheet" href="{% static 'css/dashboard_admin.css' %}">
+<div class="dashboard-admin dashboard-admin-main">
+  <h1 class="dashboard-admin-title">Bienvenido, {{ nombre_admin|default:"Administrador" }}</h1>
+  <p class="mb-12 text-lg text-gray-600">Gestiona usuarios, revisa solicitudes y administra el sistema desde aquí.</p>
+  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <!-- Gestión de Usuarios -->
+    <a href="{% url 'gestion_usuarios' %}" class="dashboard-admin-card dashboard-admin-card-blue group block transition relative overflow-hidden" id="card-usuarios">
+      <div class="flex items-center space-x-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A8.964 8.964 0 0112 15a8.964 8.964 0 016.879 2.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <div>
+          <h2 class="text-white text-2xl font-semibold mb-1">Gestión de Usuarios</h2>
+          <p class="text-blue-200 text-sm">Agrega, modifica o elimina usuarios del sistema.</p>
+        </div>
+      </div>
+      <span class="dashboard-admin-badge" id="badge-usuarios" style="display:none;"></span>
+    </a>
+    <!-- Solicitudes de caja -->
+    <a href="{% url 'solicitudes_caja' %}" class="dashboard-admin-card dashboard-admin-card-green group relative block transition overflow-hidden" id="card-cierre">
+      <div class="flex items-center space-x-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 014-4h1m-6 6h6m-6 0v1m0-1v-1m6 1v-1a4 4 0 00-4-4h-1m4 6h.01"/>
+        </svg>
+        <div>
+          <h2 class="text-white text-2xl font-semibold mb-1">Solicitudes de caja</h2>
+          <p class="text-green-200 text-sm">Revisa y aprueba o rechaza aperturas y cierres pendientes.</p>
+        </div>
+      </div>
+      <span class="dashboard-admin-badge" id="badge-cierre" style="display:{% if solicitudes_count and solicitudes_count > 0 %}inline{% else %}none{% endif %};">{{ solicitudes_count }}</span>
+    </a>
+    <a href="{% url 'movimiento_caja' %}" class="dashboard-admin-card dashboard-admin-card-yellow group relative block transition overflow-hidden" id="card-movimiento">
+      <div class="flex items-center space-x-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l9-4 9 4M4 10h16v10H4V10z"/>
+        </svg>
+        <div>
+          <h2 class="text-white text-2xl font-semibold mb-1">Movimiento de Caja</h2>
+          <p class="text-yellow-200 text-sm">Revisa los movimientos que se hacen en Caja</p>
+        </div>
+      </div>
+      <span class="dashboard-admin-badge" id="badge-movimiento" style="display:none;"></span>
+    </a>
+    <!-- Solicitudes de anulación de venta -->
+    <a href="{% url 'revisar_solicitudes_anulacion' %}" class="dashboard-admin-card dashboard-admin-card-red group relative block transition overflow-hidden" id="card-anulacion">
+      <div class="flex items-center space-x-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div>
+          <h2 class="text-white text-2xl font-semibold mb-1">Solicitudes de anulación de venta</h2>
+          <p class="text-red-200 text-sm">Gestiona solicitudes pendientes de anulación.</p>
+        </div>
+      </div>
+      <span class="dashboard-admin-badge" id="badge-anulacion" style="display:{% if solicitudes_anulacion_count and solicitudes_anulacion_count > 0 %}inline{% else %}none{% endif %};background:#FFD600;color:#23252B;">{{ solicitudes_anulacion_count }}</span>
+    </a>
+  </div>
 </div>
+
 {% endblock %}
+
+{# Elementos globales fuera de los bloques para asegurar visibilidad #}
+{% if messages %}
+<div style="margin-bottom: 24px;">
+  {% for message in messages %}
+  <div class="dashboard-card animate-fade-in-right" style="margin-bottom: 12px;">
+    <span class="card-title">
+      {% if message.tags == 'success' %}✔ Éxito{% elif message.tags == 'error' %}✖ Error{% else %}ℹ Info{% endif %}
+    </span>
+    <span class="card-desc">{{ message }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- Chat privado admin-cajero (azul flotante) -->
+<button id="open-chatbot-btn" style="position:fixed;bottom:32px;right:32px;z-index:9999;background:#2563eb;color:white;border:none;border-radius:50%;width:60px;height:60px;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+  💬
+</button>
+<div id="chatbot-modal" style="display:none;position:fixed;bottom:100px;right:40px;width:350px;max-width:95vw;height:480px;z-index:10000;background:white;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.18);overflow:hidden;flex-direction:column;">
+  <div style="background:#2563eb;color:white;padding:14px 18px;font-weight:bold;display:flex;align-items:center;justify-content:space-between;">
+    <span>Chat Privado</span>
+    <button id="close-chatbot-btn" style="background:none;border:none;color:white;font-size:22px;cursor:pointer;">&times;</button>
+  </div>
+  <select id="chat-user-select" style="border-radius: 8px; padding: 4px 8px; font-size: 1rem; margin:12px;">
+    <option value="">Selecciona destinatario</option>
+    <option value="{{ admin_user.id }}">{{ admin_user.username }} (admin)</option>
+  </select>
+  <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 12px; background: #F7F7F7;"></div>
+  <form id="chat-form" style="display: flex; gap: 8px; padding: 12px; border-top: 1px solid #eee; background: #fff;">
+    <input type="text" id="chat-input" placeholder="Escribe un mensaje..." style="flex: 1; border-radius: 8px; border: 1px solid #2563eb; padding: 8px; font-size: 1rem;">
+    <button type="submit" style="background:#2563eb;color:white;border:none;border-radius:8px;padding:8px 16px;font-weight:bold;">Enviar</button>
+  </form>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const openBtn = document.getElementById('open-chatbot-btn');
+  const modal = document.getElementById('chatbot-modal');
+  const closeBtn = document.getElementById('close-chatbot-btn');
+  const chatUserSelect = document.getElementById('chat-user-select');
+  const chatMessages = document.getElementById('chat-messages');
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+  let socket = null;
+  let destinatarioId = null;
+
+  if (openBtn && modal && closeBtn && chatUserSelect && chatMessages && chatForm && chatInput) {
+    openBtn.onclick = () => {
+      modal.style.display = 'flex';
+      setTimeout(() => { chatInput.focus(); }, 200);
+    };
+    closeBtn.onclick = () => {
+      modal.style.display = 'none';
+    };
+    window.addEventListener('click', function(e) {
+      if (modal.style.display === 'flex' && !modal.contains(e.target) && e.target !== openBtn) {
+        modal.style.display = 'none';
+      }
+    });
+
+    chatUserSelect.addEventListener('change', function() {
+      destinatarioId = this.value;
+      if (socket) socket.close();
+      chatMessages.innerHTML = '';
+      if (destinatarioId) {
+        socket = new WebSocket(`ws://${window.location.host}/ws/chat/${destinatarioId}/`);
+        socket.onmessage = function(e) {
+          const data = JSON.parse(e.data);
+          let msgHtml = `<div style='margin-bottom:8px;'><b>${data.usuario}:</b> ${data.mensaje}</div>`;
+          if (data.imagen) msgHtml += `<br><img src='${data.imagen}' style='max-width:120px; border-radius:8px;'>`;
+          chatMessages.innerHTML += msgHtml;
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        };
+      }
+    });
+
+    chatForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (socket && destinatarioId && chatInput.value.trim()) {
+        socket.send(JSON.stringify({
+          mensaje: chatInput.value,
+          imagen: null
+        }));
+        chatInput.value = '';
+      }
+    });
+  }
+});
+</script>
+<script>
+console.log('JS dashboard admin cargado (prueba visible)');
+document.addEventListener('DOMContentLoaded', function() {
+  // Conecta al WebSocket de notificaciones admin (ajusta la ruta si es necesario)
+  let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+  let socket = new WebSocket(ws_scheme + '://' + window.location.host + '/ws/admin_notifications/');
+
+  // ---
+  // Estructura esperada del mensaje recibido por WebSocket:
+  // Ejemplo real recibido desde el backend:
+  // {
+  //   tipo: 'nueva_apertura',
+  //   datos: {
+  //     usuario: 'KatulinDesparv',
+  //     monto_inicial: '1231.0',
+  //     comentario: 'asda',
+  //     fecha: '11/07/2025 17:20'
+  //   }
+  // }
+  // Otros posibles campos según el tipo de evento:
+  //   nuevas_cierre_count?: number // (opcional) Nuevo total de solicitudes de caja
+  //   nuevas_anulacion_count?: number // (opcional) Nuevo total de solicitudes de anulación
+  // Solo se usa 'tipo' para identificar el evento. El backend debe enviar al menos la clave 'tipo'.
+  // ---
+  socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    console.log('WS recibido:', data); // Depuración
+
+    const tipo = data.tipo;
+
+    if (tipo === 'nueva_apertura' || tipo === 'nueva_cierre' || tipo === 'respuesta_cierre') {
+      if (typeof data.nuevas_cierre_count !== 'undefined') {
+        setBadge('badge-cierre', data.nuevas_cierre_count);
+      } else {
+        incrementarBadge('badge-cierre');
+      }
+    }
+
+    if (tipo === 'nueva_movimiento') {
+      incrementarBadge('badge-movimiento');
+    }
+
+    if (tipo === 'nueva_anulacion' || tipo === 'respuesta_anulacion') {
+      if (typeof data.nuevas_anulacion_count !== 'undefined') {
+        setBadge('badge-anulacion', data.nuevas_anulacion_count);
+      } else {
+        incrementarBadge('badge-anulacion');
+      }
+    }
+  };
+
+  function incrementarBadge(badgeId) {
+    const badge = document.getElementById(badgeId);
+    if (badge) {
+      let count = parseInt(badge.textContent, 10);
+      if (isNaN(count) || count < 1) {
+        count = 1;
+      } else {
+        count += 1;
+      }
+      badge.textContent = count;
+      badge.style.display = 'inline';
+    }
+  }
+
+  function setBadge(badgeId, count) {
+    const badge = document.getElementById(badgeId);
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline' : 'none';
+    }
+  }
+});
+
+async def send_notification(self, event):
+    message = event.get("message", {})
+    print(f"[WS] Enviando notificación: {message}")  # Verifica que la notificación es la esperada
+    await self.send(text_data=json.dumps(message))
+
+</script>

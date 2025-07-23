@@ -1,0 +1,167 @@
+/* Tabla de compras en estadísticas */
+.estadisticas-compras {
+  margin-top: 32px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 24px 18px 18px 18px;
+}
+.estadisticas-compras-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #181A20;
+  margin-bottom: 18px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-left: 6px solid #FFD600;
+  padding-left: 12px;
+}
+.estadisticas-compras-table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+.estadisticas-compras-table th, .estadisticas-compras-table td {
+  padding: 12px 8px;
+  text-align: left;
+}
+.estadisticas-compras-table thead {
+  background: #FFD600;
+  color: #181A20;
+  font-weight: 700;
+}
+.estadisticas-compras-table tbody tr {
+  border-top: 1px solid #E5E5E5;
+  transition: background 0.2s;
+}
+.estadisticas-compras-table tbody tr:hover {
+  background: #FFFBEA;
+}
+/* Estilos modernos para estadísticas tipo sneaker shop */
+.estadisticas-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 12px;
+}
+.estadisticas-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #181A20;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-left: 8px solid #FFD600;
+  padding-left: 18px;
+}
+.estadisticas-form {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 24px 32px;
+  margin-bottom: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-end;
+}
+.estadisticas-form label {
+  font-weight: 600;
+  color: #23252B;
+  margin-bottom: 6px;
+}
+.estadisticas-form input {
+  border: 2px solid #E5E5E5;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  background: #F7F7F7;
+  color: #23252B;
+  margin-bottom: 8px;
+}
+.estadisticas-form input:focus {
+  border-color: #FFD600;
+  outline: none;
+}
+.estadisticas-btn {
+  background: #23252B;
+  color: #FFD600;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  margin-right: 8px;
+  text-transform: uppercase;
+}
+.estadisticas-btn:hover {
+  background: #FFD600;
+  color: #23252B;
+  transform: scale(1.05);
+}
+.estadisticas-resumen {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.estadisticas-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 32px 16px;
+  text-align: center;
+  transition: transform 0.3s cubic-bezier(.4,2,.6,1), box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.estadisticas-card:hover {
+  transform: translateY(-8px) scale(1.04) rotate(-1deg);
+  box-shadow: 0 8px 32px rgba(255,214,0,0.15);
+}
+.estadisticas-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #23252B;
+  margin-bottom: 10px;
+}
+.estadisticas-card .valor {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #FFD600;
+  letter-spacing: 1px;
+  transition: color 0.3s;
+}
+.estadisticas-card:hover .valor {
+  color: #FF3B3B;
+}
+.estadisticas-alerta {
+  background: #FFFBEA;
+  color: #FFD600;
+  border-radius: 8px;
+  padding: 18px 0 8px 0;
+  margin-bottom: 24px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+@media (max-width: 900px) {
+  .estadisticas-resumen {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .estadisticas-container {
+    padding: 0 2px;
+  }
+  .estadisticas-form {
+    padding: 12px 6px;
+    gap: 12px;
+  }
+}

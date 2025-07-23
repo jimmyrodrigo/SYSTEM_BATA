@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from users.decorators import role_required
+from bata_peru.users.decorators import role_required
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.db.models import F
@@ -22,9 +22,11 @@ def catalogo_inventario(request):
     subcategoria_filtro = request.GET.get('subcategoria', '')
     fecha_ingreso = request.GET.get('fecha_ingreso', '')
     stock_bajo = request.GET.get('stock_bajo', '')
-
     productos = Producto.objects.all()
-
+    talla_filtro = request.GET.get('talla', '').strip()
+    
+    if talla_filtro:
+        productos = productos.filter(talla__iexact=talla_filtro)
     if consulta:
         productos = productos.filter(nombre__icontains=consulta)
     if marca_filtro:
@@ -42,6 +44,7 @@ def catalogo_inventario(request):
     if stock_bajo == 'on':
         productos = productos.filter(cantidad__lte=F('stock_minimo'))
 
+    talla = Producto.objects.values_list('talla', flat=True).distinct()
     marcas = Producto.objects.values_list('marca', flat=True).distinct()
     colores = Producto.objects.values_list('color', flat=True).distinct()
     categorias = Producto.objects.values_list('categoria__nombre', flat=True).distinct()
@@ -53,6 +56,7 @@ def catalogo_inventario(request):
         'colores': colores,
         'categorias': categorias,
         'subcategorias': subcategorias,
+        'talla': talla
     })
 
 @role_required('inventario')

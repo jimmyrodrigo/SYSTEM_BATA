@@ -1,54 +1,110 @@
 {% extends "ventas/base_dashboard.html" %}
-{% block title %}Carrito de Venta{% endblock %}
+{% load static %}
+{% block title %}Mi carrito de compras{% endblock %}
 {% block content %}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/carrito.css' %}" />
 
-<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md karla">
-  <h2 class="text-2xl font-bold text-blue-700 mb-6">Carrito de Productos</h2>
+<div class="carrito-container">
+  <h1 class="carrito-title">Mi carrito de compras <span class="text-gray-600 text-lg font-normal">[{{ carrito_items|length }}]</span></h1>
 
   {% if carrito_items %}
-  <table class="w-full text-sm mb-6">
-    <thead class="bg-blue-100 text-left">
-      <tr>
-        <th class="p-3">Producto</th>
-        <th class="p-3 text-right">Precio</th>
-        <th class="p-3 text-center">Cantidad</th>
-        <th class="p-3 text-right">Subtotal</th>
-        <th class="p-3 text-center">Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for item in carrito_items %}
-      <tr class="border-t">
-        <td class="p-3">{{ item.producto.nombre }}</td>
-        <td class="p-3 text-right">S/ {{ item.producto.precio|floatformat:2 }}</td>
-        <td class="p-3 text-center">{{ item.cantidad }}</td>
-        <td class="p-3 text-right">S/ {{ item.subtotal|floatformat:2 }}</td>
-        <td class="p-3 text-center">
-          <form method="post" action="{% url 'eliminar_del_carrito' item.producto.id %}">
-            {% csrf_token %}
-            <button type="submit" class="text-red-600 hover:underline">Eliminar</button>
-          </form>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-  <div class="text-right mb-4">
-    <p class="text-lg font-bold">Total: S/ {{ total|floatformat:2 }}</p>
+  <div class="carrito-list">
+    <!-- Productos en carrito - listado -->
+    <div class="carrito-productos">
+      <ul>
+        {% for item in carrito_items %}
+        <li class="carrito-producto-item">
+          <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" class="carrito-producto-img shoe-animate" />
+          <div class="carrito-producto-info">
+            <div>
+              <h2 class="carrito-producto-nombre">{{ item.producto.nombre }}</h2>
+              <p class="carrito-producto-detalle">Marca: {{ item.producto.marca }}</p>
+              {% if item.producto.talla %}
+                <p class="carrito-producto-detalle">Talla: {{ item.producto.talla }}</p>
+              {% endif %}
+              <p class="carrito-producto-detalle">Color: {{ item.producto.color }}</p>
+              <p class="carrito-producto-precio">Precio unitario: S/ {{ item.producto.precio|floatformat:2 }}</p>
+            </div>
+            <div class="carrito-cantidad-form">
+              <form method="post" action="{% url 'modificar_cantidad_carrito' item.producto.id %}">
+                {% csrf_token %}
+                <button type="submit" name="accion" value="menos" class="carrito-cantidad-btn">−</button>
+                <input type="text" name="cantidad" value="{{ item.cantidad }}" readonly class="carrito-cantidad-input" />
+                <button type="submit" name="accion" value="mas" class="carrito-cantidad-btn">+</button>
+              </form>
+              <form method="post" action="{% url 'eliminar_del_carrito' item.producto.id %}">
+                {% csrf_token %}
+                <button type="submit" class="carrito-eliminar-btn">Eliminar</button>
+              </form>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <!-- Resumen de pedido -->
+    <aside class="carrito-resumen">
+      <div>
+        <h3 class="carrito-resumen-title">Resumen del pedido</h3>
+        <div class="carrito-resumen-row">
+          <span>Monto base (sin IGV)</span>
+          <span>S/ {{ subtotal|floatformat:2 }}</span>
+        </div>
+        <div class="carrito-resumen-row" style="font-size:0.95rem;color:#888;">
+          <span>+ IGV (18%)</span>
+          <span>S/ {{ igv|floatformat:2 }}</span>
+        </div>
+        <div class="carrito-resumen-total">
+          <span>Total estimado</span>
+          <span>S/ {{ total|floatformat:2 }}</span>
+        </div>
+        <p style="font-size:0.9rem;color:#888;margin-top:8px;">
+          *El IGV se aplicará solo si seleccionas comprobante tipo <strong>Factura</strong> al finalizar la compra.
+        </p>
+      </div>
+      <div style="gap: 12px; display: flex; flex-direction:column;">
+        <a href="{% url 'realizar_compra' %}" class="carrito-resumen-btn">
+          Continuar compra
+        </a>
+        <a href="{% url 'catalogo_productos' %}" class="carrito-resumen-link">
+          Seguir comprando
+        </a>
+      </div>
+    </aside>
   </div>
-
-  <div class="flex justify-end">
-    <a href="{% url 'registro_venta' %}" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition">
-      Continuar con la Venta
+  {% else %}
+  <p class="text-center text-gray-600 text-lg">No hay productos en el carrito.</p>
+  <div class="mt-6 text-center">
+    <a href="{% url 'catalogo_productos' %}" class="inline-block bg-gray-700 text-white px-6 py-3 rounded hover:bg-gray-800 transition font-semibold">
+      Volver al catálogo
     </a>
   </div>
-
-  {% else %}
-  <p class="text-center text-gray-500">El carrito está vacío.</p>
   {% endif %}
 </div>
+<script>
+// Animar el zapato al pasar al siguiente producto
+const carritoItems = document.querySelectorAll('.shoe-animate');
+carritoItems.forEach((img, idx) => {
+  img.addEventListener('animationend', () => {
+    img.classList.remove('shoe-animate');
+  });
+  // Vista previa al pasar el mouse
+  img.addEventListener('mouseenter', () => {
+    img.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
+    img.style.transform = 'scale(1.08)';
+    img.style.transition = 'box-shadow 0.2s, transform 0.2s';
+  });
+  img.addEventListener('mouseleave', () => {
+    img.style.boxShadow = '';
+    img.style.transform = '';
+  });
+});
+function animateShoe(idx) {
+  const imgs = document.querySelectorAll('.carrito-producto-img');
+  if (imgs[idx]) {
+    imgs[idx].classList.add('shoe-animate');
+  }
+}
+// Si tienes lógica para pasar al siguiente producto, llama animateShoe(idx) con el índice correspondiente
+</script>
 {% endblock %}

@@ -1,0 +1,141 @@
+/* Centrado y layout principal */
+.caja-main-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f6f7fa;
+}
+
+.caja-card-centered {
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  border: 1px solid #ececec;
+}
+
+.caja-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #23252B;
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.01em;
+}
+
+.caja-info-card {
+  background: #f7f8fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.7rem;
+  padding: 1rem 0.8rem;
+  margin-bottom: 1rem;
+  box-shadow: none;
+}
+
+/* Formularios */
+.caja-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-bottom: 1rem;
+}
+.caja-form label {
+  font-weight: 600;
+  color: #23252B;
+  margin-bottom: 0.1rem;
+  align-self: flex-start;
+}
+.caja-form input[type="number"],
+.caja-form textarea {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  background: #f9fafb;
+  transition: border 0.2s;
+}
+.caja-form input[type="number"]:focus,
+.caja-form textarea:focus {
+  border: 1.5px solid #FFD600;
+  outline: none;
+}
+.caja-btn {
+  background: #FFD600;
+  color: #181A20;
+  font-weight: 700;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.65rem 1.1rem;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 1px 4px 0 rgba(255,214,0,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.caja-btn:hover {
+  background: #ffe066;
+  color: #181A20;
+  box-shadow: 0 2px 8px 0 rgba(255,214,0,0.10);
+}
+.caja-btn-block {
+  width: 100%;
+}
+
+/* Alertas y mensajes */
+#message-container {
+  margin-bottom: 1rem;
+}
+.caja-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 0.4rem;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.98rem;
+  margin-bottom: 0.4rem;
+  box-shadow: none;
+  border: 1px solid #ececec;
+}
+.caja-alert-success {
+  background: #fffbe6;
+  color: #23252B;
+  border: 1.2px solid #FFD600;
+}
+.caja-alert-error {
+  background: #fff1f1;
+  color: #FF3B3B;
+  border: 1.2px solid #FF3B3B;
+}
+.caja-alert-info {
+  background: #f3f4f6;
+  color: #23252B;
+  border: 1.2px solid #B0B3B8;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .caja-card-centered {
+    padding: 0.8rem 0.2rem 1rem 0.2rem;
+    max-width: 99vw;
+  }
+  .caja-title {
+    font-size: 1rem;
+  }
+  .caja-form input[type="number"],
+  .caja-form textarea {
+    font-size: 0.95rem;
+    padding: 0.4rem 0.5rem;
+  }
+  .caja-btn {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.7rem;
+  }
+}

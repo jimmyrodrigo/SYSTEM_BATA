@@ -1,155 +1,172 @@
 {% extends "ventas/base_dashboard.html" %}
+{% load static %}
 {% block title %}Catálogo de Productos{% endblock %}
 {% block content %}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
-<style>
-  /* Eliminar flechitas en campos number */
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  .karla{
-    font-family: "Karla", sans-serif;
-  }
-  input[type="number"] {
-    -moz-appearance: textfield;
-    appearance: textfield;
-  }
-</style>
+<link rel="stylesheet" href="{% static 'css/catalogo.css' %}" />
 
-<div class="flex flex-col md:flex-row gap-8 karla">
 
-  <!-- Catálogo de productos -->
-  <div class="md:w-3/4">
-
-    <h2 class="text-4xl font-bold text-red-600 mb-8">Catálogo de Productos</h2>
-
-    <!-- Filtros -->
-    <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-      <input type="text" name="buscar" value="{{ request.GET.buscar }}" placeholder="Buscar producto" 
-             class="p-3 border rounded shadow focus:outline-none focus:ring-2 focus:ring-red-400">
-
-      <select name="marca" class="p-3 border rounded shadow focus:outline-none focus:ring-2 focus:ring-red-400">
-        <option value="">Todas las marcas</option>
-        {% for m in marcas %}
-          <option value="{{ m }}" {% if request.GET.marca == m %}selected{% endif %}>{{ m }}</option>
-        {% endfor %}
-      </select>
-
-      <select name="color" class="p-3 border rounded shadow focus:outline-none focus:ring-2 focus:ring-red-400">
-        <option value="">Todos los colores</option>
-        {% for c in colores %}
-          <option value="{{ c }}" {% if request.GET.color == c %}selected{% endif %}>{{ c }}</option>
-        {% endfor %}
-      </select>
-
-      <select name="categoria" class="p-3 border rounded shadow focus:outline-none focus:ring-2 focus:ring-red-400">
-        <option value="">Todas las categorías</option>
-        {% for cat in categorias %}
-          <option value="{{ cat }}" {% if request.GET.categoria == cat %}selected{% endif %}>{{ cat|capfirst }}</option>
-        {% endfor %}
-      </select>
-
-      <select name="subcategoria" class="p-3 border rounded shadow focus:outline-none focus:ring-2 focus:ring-red-400">
-        <option value="">Todas las subcategorías</option>
-        {% for sub in subcategorias %}
-          <option value="{{ sub }}" {% if request.GET.subcategoria == sub %}selected{% endif %}>{{ sub|capfirst }}</option>
-        {% endfor %}
-      </select>
-
-      <div class="md:col-span-3 text-right">
-        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded shadow-lg font-semibold transition">
-          Filtrar
-        </button>
-      </div>
-    </form>
-
-    <!-- Listado de productos -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {% for producto in productos %}
-        <div class="bg-white rounded-2xl overflow-hidden shadow-lg transform hover:scale-105 hover:shadow-2xl transition">
-          <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="h-48 w-full object-contain p-4">
-          <div class="p-4 text-center">
-            <h3 class="font-bold text-lg mb-1">{{ producto.nombre }}</h3>
-            <p class="text-gray-500 text-sm">Stock: {{ producto.cantidad }}</p>
-            <p class="text-gray-700 font-bold mb-4">S/ {{ producto.precio|floatformat:2 }}</p>
-
-            <form method="post" action="{% url 'agregar_al_carrito' producto.id %}">
-              {% if producto.cantidad == 0 %}
-              <div class="flex justify-center items-center gap-2 mb-3">
-                <input type="number" value="0" disabled
-                       class="w-16 text-center border rounded bg-gray-100 text-gray-500">
-              </div>
-              <button type="button" disabled
-                      class="w-full py-2 rounded bg-gray-400 text-white font-semibold cursor-not-allowed">
-                Agotado
-              </button>
-            {% else %}
-              <form method="post" action="{% url 'agregar_al_carrito' producto.id %}">
-                {% csrf_token %}
-                <div class="flex justify-center items-center gap-2 mb-3">
-                  <button type="button" onclick="this.nextElementSibling.stepDown()"
-                          class="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300 font-bold text-lg text-gray-700">−</button>
-                  <input type="number" name="cantidad" value="1" min="1" max="{{ producto.cantidad }}"
-                         class="w-16 text-center border rounded focus:outline-none">
-                  <button type="button" onclick="this.previousElementSibling.stepUp()"
-                          class="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300 font-bold text-lg text-gray-700">+</button>
-                </div>
-            
-                <button type="submit"
-                        class="w-full py-2 rounded bg-green-600 hover:bg-green-700 text-white font-semibold transition">
-                  Agregar al carrito
-                </button>
-              </form>
-            {% endif %}
-            
-            </form>
-          </div>
-        </div>
-      {% empty %}
-        <p class="col-span-full text-center text-gray-500">No se encontraron productos.</p>
-      {% endfor %}
-    </div>
-
+<div class="catalogo-container">
+  <!-- Botón para abrir carrito -->
+  <div class="catalogo-carrito-btn">
+    <a href="{% url 'carrito' %}" id="boton-ver-carrito" class="catalogo-carrito-link" title="Ver carrito">
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#FFD600" style="margin-right:8px;vertical-align:middle;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9m-5-9V5a2 2 0 10-4 0v4" />
+      </svg>
+      <span id="cantidad-carrito">{{ total_carrito }}</span>
+    </a>
   </div>
 
-  <!-- Carrito de compras -->
-  <div class="md:w-1/2 xl:w-1/4 bg-gray-100 p-2 rounded-2xl shadow-lg h-fit sticky top-6">
-    <h2 class="text-2xl font-bold text-gray-700 mb-6">🛒 Tu Carrito</h2>
+  <!-- Título -->
+  <h1 class="catalogo-title">Zapatos <span class="catalogo-title-count">[{{ productos|length }}]</span></h1>
 
-    {% if carrito_items %}
-      <ul class="divide-y divide-gray-300 mb-6">
-        {% for item in carrito_items %}
-          <li class="flex items-center justify-between py-2">
-            <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" class="w-12 h-12 object-contain">
-            <div class="flex-1 ml-3 text-sm">
-              <p>{{ item.producto.nombre }} x{{ item.cantidad }}</p>
-            </div>
-            <span class="text-sm font-semibold">S/ {{ item.total|floatformat:2 }}</span>
-            <form method="post" action="{% url 'eliminar_del_carrito' item.producto.id %}">
-              {% csrf_token %}
-              <button type="submit" class="ml-2 text-red-600 hover:text-red-800">🗑️</button>
-            </form>
-          </li>
-        {% endfor %}
-      </ul>
-
-      <div class="text-gray-700 text-sm mb-2">Subtotal: <strong>S/ {{ subtotal|floatformat:2 }}</strong></div>
-      <div class="text-gray-700 text-sm mb-2">IGV (18%): <strong>S/ {{ igv|floatformat:2 }}</strong></div>
-      <div class="text-gray-900 text-lg font-bold mb-4">Total: S/ {{ total|floatformat:2 }}</div>
-
-      <a href="{% url 'realizar_compra' %}" 
-         class="block w-full text-center bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition">
-         Finalizar Compra
+  <!-- Categorías tipo pestañas -->
+  <nav class="catalogo-categorias-nav">
+    {% for cat in categorias %}
+      <a href="?categoria={{ cat }}" class="catalogo-categoria {% if request.GET.categoria == cat %}active{% endif %}">
+        {{ cat }}
       </a>
-    {% else %}
-      <p class="text-gray-500 text-sm text-center">No hay productos en el carrito.</p>
-    {% endif %}
+    {% endfor %}
+  </nav>
+
+  <!-- Filtros con dropdown -->
+  <div class="catalogo-filtros">
+    <div>
+      <select onchange="location.href='?marca='+this.value" class="catalogo-filtro-select">
+        <option value="">Marca</option>
+        {% for m in marcas %}
+          <option value="{{ m }}">{{ m }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <select onchange="location.href='?talla='+this.value" class="catalogo-filtro-select">
+        <option value="">Talla</option>
+        {% for t in tallas %}
+          <option value="{{ t }}">{{ t }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <select onchange="location.href='?color='+this.value" class="catalogo-filtro-select">
+        <option value="">Color</option>
+        {% for c in colores %}
+          <option value="{{ c }}">{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <a href="{% url 'catalogo_productos' %}" class="catalogo-filtro-clear">Borrar todos los filtros</a>
   </div>
 
+  <!-- Productos grid -->
+  <div class="catalogo-productos-grid">
+    {% for producto in productos %}
+      <div class="catalogo-producto-card">
+        <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="catalogo-producto-img">
+        <div class="catalogo-producto-info">
+          <h3 class="catalogo-producto-nombre">{{ producto.nombre }}</h3>
+          {% if producto.talla %}
+            <p class="catalogo-producto-talla">Talla: {{ producto.talla }}</p>
+          {% endif %}
+          <p class="catalogo-producto-stock">Stock: {{ producto.cantidad }}</p>
+          <p class="catalogo-producto-precio">S/ {{ producto.precio|floatformat:2 }}</p>
+          <form method="post" action="{% url 'agregar_al_carrito' producto.id %}" class="agregar-carrito-form">
+            {% csrf_token %}
+            <input type="hidden" name="nombre_producto" value="{{ producto.nombre }}">
+            <input type="hidden" name="imagen_producto" value="{{ producto.imagen.url }}">
+            <input type="hidden" name="precio_producto" value="{{ producto.precio }}">
+            <div class="catalogo-cantidad-selector">
+              <button type="button" class="catalogo-cantidad-btn" onclick="stepCantidad(this, -1)">−</button>
+              <input type="number" name="cantidad" value="1" min="1" max="{{ producto.cantidad }}" class="catalogo-cantidad-input">
+              <button type="button" class="catalogo-cantidad-btn" onclick="stepCantidad(this, 1)">+</button>
+            </div>
+            <button type="submit" class="catalogo-agregar-btn">Agregar al carrito</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 </div>
 
+<!-- Carrito flotante -->
+<div id="carrito-flotante" class="catalogo-carrito-flotante">
+  <h3 class="catalogo-carrito-flotante-title">Producto agregado al carrito</h3>
+  <div id="detalle-producto-agregado" class="catalogo-carrito-flotante-detalle"></div>
+  <a href="{% url 'carrito' %}" class="catalogo-carrito-flotante-btn">Ver carrito y continuar compra</a>
+</div>
+
+<script>
+  function stepCantidad(btn, delta) {
+    const input = btn.parentElement.querySelector('input[name="cantidad"]');
+    let value = parseInt(input.value) || 1;
+    value += delta;
+    if (value < parseInt(input.min)) value = parseInt(input.min);
+    if (value > parseInt(input.max)) value = parseInt(input.max);
+    input.value = value;
+  }
+
+  function mostrarCarrito(producto) {
+    const carritoFlotante = document.getElementById('carrito-flotante');
+    const detalle = document.getElementById('detalle-producto-agregado');
+    const precioTotal = (producto.precio * producto.cantidad).toFixed(2);
+
+    detalle.innerHTML = `
+      <div class="flex items-center gap-4">
+        <img src="${producto.imagen}" alt="${producto.nombre}" class="w-16 h-16 object-contain rounded border">
+        <div>
+          <p class="font-semibold">${producto.nombre}</p>
+          <p class="text-sm text-gray-600">Cantidad: ${producto.cantidad}</p>
+          <p class="text-red-600 font-bold">S/ ${precioTotal}</p>
+        </div>
+      </div>
+    `;
+
+    carritoFlotante.classList.remove('hidden');
+
+    setTimeout(() => {
+      carritoFlotante.classList.add('hidden');
+    }, 4000);
+
+    // Actualizar el contador del carrito en el frontend
+    const contador = document.getElementById('cantidad-carrito');
+    contador.textContent = parseInt(contador.textContent) + producto.cantidad;
+  }
+
+  document.querySelectorAll('form.agregar-carrito-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const url = this.action;
+      const formData = new FormData(this);
+      const cantidadInput = this.querySelector('input[name="cantidad"]');
+      const cantidad = parseInt(cantidadInput.value) || 1;
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const producto = {
+            nombre: this.querySelector('input[name="nombre_producto"]').value,
+            imagen: this.querySelector('input[name="imagen_producto"]').value,
+            cantidad: cantidad,
+            precio: parseFloat(this.querySelector('input[name="precio_producto"]').value)
+          };
+          mostrarCarrito(producto);
+
+          // Actualizar contador con cantidad total real del backend
+          const contador = document.getElementById('cantidad-carrito');
+          contador.textContent = data.total_cantidad;
+        } else {
+          alert("Error al agregar producto al carrito.");
+        }
+      })
+      .catch(() => alert("Error en la comunicación con el servidor."));
+    });
+  });
+</script>
 {% endblock %}

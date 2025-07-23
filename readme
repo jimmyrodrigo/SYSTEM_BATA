@@ -1,0 +1,54 @@
+# Cambios Realizados y Tareas Pendientes
+
+Este documento detalla los cambios realizados en el proyecto y las tareas futuras pendientes, incluyendo la migración de la base de datos, la implementación de WebSockets, la lógica de chat y las notificaciones.
+
+## Cambios Realizados
+
+
+### 1. **Migración de la Base de Datos a PostgreSQL**
+- La base de datos del proyecto ha sido migrada a **PostgreSQL**.
+- La configuración de la base de datos está definida en el archivo `settings.py`.
+  - Asegúrate de tener instalado PostgreSQL y la librería `psycopg2` o `psycopg2-binary` para la conexión.
+  - Actualiza las credenciales de tu base de datos en `DATABASES` dentro de `settings.py`.
+
+### 2. **Configuración de WebSockets con `delphan`**
+- El manejo de WebSockets se ha configurado utilizando **`delphan`** en **VSCode**.
+- En la carpeta correspondiente, encontrarás un archivo `tasks.json`, que contiene las configuraciones necesarias para iniciar el servidor de WebSockets.
+  - Para iniciar el servidor, usa el comando **"Run Task"** en VSCode (`Alt+F1`) y selecciona el task correspondiente.
+  - Para simular un entorno de producción, puedes usar el comando **`delphan + static`**.
+
+### 3. **Implementación de la Lógica de Chat y Notificaciones**
+- Se ha implementado una lógica de **chat** que permite la comunicación en tiempo real dentro del sistema.
+- Las **notificaciones** se han integrado para garantizar que los usuarios reciban mensajes en tiempo real a través de WebSockets, mejorando la interacción y la comunicación dentro del sistema.
+
+### 4. **Problema Detectado en la Lógica de la Caja**
+- **Problema**: Cuando se anula una venta, los ingresos se vuelven negativos.
+- **Causa**: El sistema no está manejando correctamente las relaciones entre las ventas anuladas y las cajas.
+- **Solución Propuesta**: Cada caja debe tener un **ID único**. Las anulaciones de ventas deben afectar solo a la caja correspondiente a ese ID.
+  - Esto evitará que las anulaciones de ventas impacten otras transacciones de cajas diferentes.
+
+## Tareas Pendientes
+
+### 1. **Migración de la Base de Datos a la Nube (Tarea a Futuro)**
+- Se plantea como tarea futura la **migración de la base de datos a la nube** para mejorar la escalabilidad y disponibilidad del sistema.
+- **Acciones a tomar**: Investigar plataformas como **AWS RDS**, **Google Cloud SQL** o **Heroku Postgres**.
+- **Beneficios esperados**: 
+  - Mejor disponibilidad y escalabilidad.
+  - Acceso desde cualquier ubicación.
+  - Reducción de costos de infraestructura a largo plazo.
+
+### 2. **Mejoras en la Lógica de Caja**
+- Asegurarse de que cada caja esté asociada a un **ID único**, de modo que las anulaciones de ventas solo afecten a esa caja.
+- Esto implica ajustar la lógica para que los ingresos y egresos se actualicen correctamente sin afectar otras cajas.
+
+## Instrucciones de Configuración
+
+### Requisitos Previos
+- Python 3.x
+- PostgreSQL
+- `psycopg2` o `psycopg2-binary` para la conexión a PostgreSQL
+- VSCode con soporte para `delphan` y WebSockets
+
+### 1. **Instalación de Dependencias**
+```bash
+pip install -r requirements.txt

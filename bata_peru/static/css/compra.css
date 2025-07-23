@@ -1,0 +1,119 @@
+/* Estilos minimalistas inspirados en sneaker shop para realizar compra */
+body {
+  background: #F7F7F7;
+  font-family: 'Poppins', Arial, sans-serif;
+}
+.compra-container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+  padding: 40px 32px;
+}
+.compra-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #181A20;
+  margin-bottom: 32px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-left: 8px solid #FFD600;
+  padding-left: 18px;
+}
+.compra-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.compra-form label {
+  font-weight: 600;
+  color: #23252B;
+  margin-bottom: 6px;
+}
+.compra-form input,
+.compra-form select {
+  width: 100%;
+  border: 2px solid #E5E5E5;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 1rem;
+  margin-bottom: 12px;
+  background: #F7F7F7;
+  color: #23252B;
+}
+.compra-form input:focus,
+.compra-form select:focus {
+  border-color: #FFD600;
+  outline: none;
+}
+.compra-metodos {
+  display: flex;
+  gap: 18px;
+  margin-top: 8px;
+}
+.compra-metodos img {
+  height: 32px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 2px 8px;
+}
+.compra-resumen {
+  margin-top: 32px;
+  background: #F7F7F7;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.compra-resumen-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #181A20;
+}
+.compra-resumen-list {
+  margin-bottom: 18px;
+}
+.compra-resumen-list li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  padding: 8px 0;
+  border-bottom: 1px solid #E5E5E5;
+}
+.compra-resumen-total {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #FFD600;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+.compra-btn {
+  background: #23252B;
+  color: #FFD600;
+  border: none;
+  border-radius: 8px;
+  padding: 16px 0;
+  font-size: 1.1rem;
+  font-weight: 900;
+  width: 100%;
+  cursor: pointer;
+  margin-top: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: background 0.2s, color 0.2s;
+}
+.compra-btn:hover {
+  background: #FFD600;
+  color: #23252B;
+}
+@media (max-width: 900px) {
+  .compra-container {
+    padding: 18px 6px;
+  }
+  .compra-form {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}

@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}Solicitudes de Caja{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto mt-10 p-6 bg-white rounded shadow">
+  <h1 class="text-2xl font-bold mb-6">📋 Solicitudes de Caja Pendientes</h1>
+
+  <!-- 📦 Solicitudes de Cierre -->
+  <div class="mb-12">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">🔒 Cierre de Caja</h2>
+    {% if solicitudes_cierre %}
+      <table class="min-w-full text-sm border border-gray-300 rounded">
+        <thead class="bg-gray-200 text-gray-600 uppercase">
+          <tr>
+            <th class="py-3 px-4 border-b">Usuario</th>
+            <th class="py-3 px-4 border-b">Monto Inicial</th>
+            <th class="py-3 px-4 border-b">Fecha Apertura</th>
+            <th class="py-3 px-4 border-b">Comentario</th>
+            <th class="py-3 px-4 border-b">Fecha de Solicitud</th>
+            <th class="py-3 px-4 border-b">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for solicitud in solicitudes_cierre %}
+            <tr id="cierre-{{ solicitud.id }}" class="border-b hover:bg-gray-50">
+              <td class="py-2 px-4">{{ solicitud.usuario.username }}</td>
+              <td class="py-2 px-4">S/ {{ solicitud.caja.saldo_inicial|floatformat:2 }}</td>
+              <td class="py-2 px-4">{{ solicitud.caja.fecha_apertura|date:"d/m/Y H:i" }}</td>
+              <td class="py-2 px-4">{{ solicitud.comentario|default:"—" }}</td>
+              <td class="py-2 px-4">{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
+              <td class="py-2 px-4">
+                <button class="btn-cierre bg-green-600 text-white px-3 py-1 rounded mr-2" data-id="{{ solicitud.id }}" data-accion="aprobar">Aprobar</button>
+                <button class="btn-cierre bg-red-600 text-white px-3 py-1 rounded" data-id="{{ solicitud.id }}" data-accion="rechazar">Rechazar</button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-center text-gray-500">No hay solicitudes de cierre pendientes.</p>
+    {% endif %}
+  </div>
+
+  <!-- 🧷 Solicitudes de Apertura -->
+  <div>
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">🔓 Apertura de Caja</h2>
+    {% if solicitudes_apertura %}
+      <table class="min-w-full text-sm border border-gray-300 rounded">
+        <thead class="bg-gray-200 text-gray-600 uppercase">
+          <tr>
+            <th class="py-3 px-4 border-b">Usuario</th>
+            <th class="py-3 px-4 border-b">Monto Inicial</th>
+            <th class="py-3 px-4 border-b">Comentario</th>
+            <th class="py-3 px-4 border-b">Fecha de Solicitud</th>
+            <th class="py-3 px-4 border-b">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for solicitud in solicitudes_apertura %}
+            <tr id="apertura-{{ solicitud.id }}" class="border-b hover:bg-gray-50">
+              <td class="py-2 px-4">{{ solicitud.usuario.username }}</td>
+              <td class="py-2 px-4">S/ {{ solicitud.monto_inicial|floatformat:2 }}</td>
+              <td class="py-2 px-4">{{ solicitud.comentario|default:"—" }}</td>
+              <td class="py-2 px-4">{{ solicitud.fecha_solicitud|date:"d/m/Y H:i" }}</td>
+              <td class="py-2 px-4">
+                <button class="btn-apertura bg-green-600 text-white px-3 py-1 rounded mr-2" data-id="{{ solicitud.id }}" data-accion="aprobar">Aprobar</button>
+                <button class="btn-apertura bg-red-600 text-white px-3 py-1 rounded" data-id="{{ solicitud.id }}" data-accion="rechazar">Rechazar</button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-center text-gray-500">No hay solicitudes de apertura pendientes.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- 🔔 Mensajes -->
+<div id="message-container" class="max-w-3xl mx-auto mt-6"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $('.btn-cierre').click(function(e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    const accion = $(this).data('accion');
+
+    $.ajax({
+      url: "{% url 'aprobar_cierre_caja' 0 %}".replace('0', id),
+      method: "POST",
+      data: {
+        accion: accion,
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+      },
+      success: function(res) {
+        $('#message-container').html(`
+          <div class="bg-${res.status === 'success' ? 'green' : 'yellow'}-100 text-${res.status === 'success' ? 'green' : 'yellow'}-700 px-4 py-3 rounded shadow">
+            ${res.message}
+          </div>`);
+        $('#cierre-' + id).fadeOut();
+      },
+      error: function() {
+        $('#message-container').html('<div class="bg-red-100 text-red-700 px-4 py-3 rounded shadow">❌ Error procesando la solicitud.</div>');
+      }
+    });
+  });
+
+  $('.btn-apertura').click(function(e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    const accion = $(this).data('accion');
+
+    $.ajax({
+      url: "{% url 'aprobar_apertura_caja' 0 %}".replace('0', id),
+      method: "POST",
+      data: {
+        accion: accion,
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+      },
+      success: function(res) {
+        $('#message-container').html(`
+          <div class="bg-${res.status === 'success' ? 'green' : 'yellow'}-100 text-${res.status === 'success' ? 'green' : 'yellow'}-700 px-4 py-3 rounded shadow">
+            ${res.message}
+          </div>`);
+        $('#apertura-' + id).fadeOut();
+      },
+      error: function() {
+        $('#message-container').html('<div class="bg-red-100 text-red-700 px-4 py-3 rounded shadow">❌ Error procesando la solicitud.</div>');
+      }
+    });
+  });
+</script>
+<script>
+// --- WebSocket para notificaciones de caja a administradores ---
+let adminSocket = null;
+let adminMensajeMostrado = false;
+
+function mostrarNotificacionAdmin(tipo, datos) {
+  let mensaje = '';
+  if (tipo === 'nueva_apertura') {
+    mensaje = `🔓 Nueva solicitud de <b>apertura</b> de caja de <b>${datos.usuario}</b> (S/ ${datos.monto_inicial})<br><i>${datos.comentario || ''}</i> <span class='text-xs text-gray-500'>${datos.fecha}</span>`;
+  } else if (tipo === 'nueva_cierre') {
+    mensaje = `🔒 Nueva solicitud de <b>cierre</b> de caja de <b>${datos.usuario}</b><br><i>${datos.comentario || ''}</i> <span class='text-xs text-gray-500'>${datos.fecha}</span>`;
+  } else if (tipo === 'aprobada' || tipo === 'rechazada') {
+    mensaje = `Respuesta enviada al usuario: <b>${tipo === 'aprobada' ? 'Aprobada' : 'Rechazada'}</b>`;
+  }
+  $('#message-container').html(`
+    <div class="bg-blue-100 text-blue-700 px-4 py-3 rounded shadow mb-2 animate-pulse">
+      ${mensaje}
+    </div>
+  `);
+  setTimeout(() => $('#message-container').html(''), 5000);
+}
+
+$(document).ready(function () {
+  // Solo conectar si el usuario es admin (el backend ya lo filtra)
+  console.log('[WebSocket admin] Intentando conectar...');
+  let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+  let ws_path = ws_scheme + '://' + window.location.host + '/ws/notificaciones_caja/';
+  console.log('[WebSocket admin] URL:', ws_path);
+  adminSocket = new WebSocket(ws_path);
+
+  adminSocket.onopen = function() {
+    console.log('[WebSocket admin] Conexión abierta');
+  };
+  adminSocket.onerror = function(e) {
+    console.error('[WebSocket admin] Error de conexión:', e);
+  };
+  adminSocket.onclose = function(e) {
+    console.warn('[WebSocket admin] Conexión cerrada:', e);
+  };
+  adminSocket.onmessage = function(event) {
+    let data = {};
+    try { data = JSON.parse(event.data); } catch (e) {
+      console.error('[WebSocket admin] Error al parsear mensaje:', event.data, e);
+      return;
+    }
+    console.log('[WebSocket admin] Mensaje recibido:', data);
+    if (data.tipo === 'nueva_apertura' || data.tipo === 'nueva_cierre') {
+      console.log('[WebSocket admin] Ejecutando recarga por tipo:', data.tipo);
+      mostrarNotificacionAdmin(data.tipo, data);
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      console.log('[WebSocket admin] Mensaje recibido pero tipo no relevante:', data.tipo);
+    }
+  };
+
+  // ...existing code for agregarSolicitudATabla and asignarEventosBotones...
+  // Inicializar eventos al cargar
+  asignarEventosBotones();
+});
+</script>
+{% endblock %}

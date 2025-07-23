@@ -10,5 +10,149 @@
         {% block content %}
         {% endblock %}
     </div>
+<!-- Chat privado admin-cajero (azul flotante) -->
+<button id="open-chatbot-btn" style="position:fixed;bottom:32px;right:32px;z-index:9999;background:#2563eb;color:white;border:none;border-radius:50%;width:60px;height:60px;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-size:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+  💬
+</button>
+<div id="chatbot-modal" style="display:none;position:fixed;bottom:100px;right:40px;width:350px;max-width:95vw;height:480px;z-index:10000;background:white;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.18);overflow:hidden;flex-direction:column;">
+  <div style="background:#2563eb;color:white;padding:14px 18px;font-weight:bold;display:flex;align-items:center;justify-content:space-between;">
+    <span>Chat Privado</span>
+    <button id="close-chatbot-btn" style="background:none;border:none;color:white;font-size:22px;cursor:pointer;">&times;</button>
+  </div>
+  <select id="chat-user-select" style="border-radius: 8px; padding: 4px 8px; font-size: 1rem; margin:12px;">
+    <option value="">Selecciona destinatario</option>
+    {# Si hay usuarios_cajero, mostrar todos (para el admin). Si no, mostrar solo admin (para cajero) #}
+    {% if usuarios_cajero %}
+      {% for usuario in usuarios_cajero %}
+        <option value="{{ usuario.id }}">{{ usuario.username }}</option>
+      {% endfor %}
+    {% elif admin_user %}
+      <option value="{{ admin_user.id }}">{{ admin_user.username }} (admin)</option>
+    {% endif %}
+  </select>
+  <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 12px; background: #F7F7F7;"></div>
+  <form id="chat-form" style="display: flex; gap: 8px; padding: 12px; border-top: 1px solid #eee; background: #fff;">
+    <input type="text" id="chat-input" placeholder="Escribe un mensaje..." style="flex: 1; border-radius: 8px; border: 1px solid #2563eb; padding: 8px; font-size: 1rem;">
+    <button type="submit" style="background:#2563eb;color:white;border:none;border-radius:8px;padding:8px 16px;font-weight:bold;">Enviar</button>
+  </form>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // --- WebSocket para notificaciones admin (si eres admin) ---
+  let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+  let adminSocket = new WebSocket(ws_scheme + '://' + window.location.host + '/ws/admin_notifications/');
+
+  adminSocket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    // Usar solo 'tipo' para identificar el evento
+    const tipo = data.tipo;
+    // Solicitudes de apertura/cierre de caja
+    if (tipo === 'nueva_apertura' || tipo === 'nueva_cierre' || tipo === 'respuesta_cierre') {
+      if (typeof data.nuevas_cierre_count !== 'undefined') {
+        setBadge('badge-cierre', data.nuevas_cierre_count);
+      } else {
+        incrementarBadge('badge-cierre');
+      }
+    }
+    // Movimiento de caja
+    if (tipo === 'nueva_movimiento') {
+      incrementarBadge('badge-movimiento');
+    }
+    // Solicitudes de anulación de venta (nueva o respuesta)
+    if (tipo === 'nueva_anulacion' || tipo === 'respuesta_anulacion') {
+      if (typeof data.nuevas_anulacion_count !== 'undefined') {
+        setBadge('badge-anulacion', data.nuevas_anulacion_count);
+      } else {
+        incrementarBadge('badge-anulacion');
+      }
+    }
+  };
+
+  function incrementarBadge(badgeId) {
+    const badge = document.getElementById(badgeId);
+    if (badge) {
+      let count = parseInt(badge.textContent, 10);
+      if (isNaN(count) || count < 1) {
+        count = 1;
+      } else {
+        count += 1;
+      }
+      badge.textContent = count;
+      badge.style.display = 'inline';
+    }
+  }
+
+  function setBadge(badgeId, count) {
+    const badge = document.getElementById(badgeId);
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? 'inline' : 'none';
+    }
+  }
+
+  // --- WebSocket para chat privado admin-cajero ---
+  const openBtn = document.getElementById('open-chatbot-btn');
+  const modal = document.getElementById('chatbot-modal');
+  const closeBtn = document.getElementById('close-chatbot-btn');
+  const chatUserSelect = document.getElementById('chat-user-select');
+  const chatMessages = document.getElementById('chat-messages');
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+  let socket = null;
+  let destinatarioId = null;
+
+  function openSocketIfReady() {
+    destinatarioId = chatUserSelect.value;
+    if (socket) socket.close();
+    chatMessages.innerHTML = '';
+    if (destinatarioId) {
+      let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+      socket = new WebSocket(`${ws_scheme}://${window.location.host}/ws/chat/${destinatarioId}/`);
+      socket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        let msgHtml = `<div style='margin-bottom:8px;'><b>${data.usuario}:</b> ${data.mensaje}</div>`;
+        if (data.imagen) msgHtml += `<br><img src='${data.imagen}' style='max-width:120px; border-radius:8px;'>`;
+        chatMessages.innerHTML += msgHtml;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      };
+    }
+  }
+
+  if (openBtn && modal && closeBtn && chatUserSelect && chatMessages && chatForm && chatInput) {
+    openBtn.onclick = () => {
+      modal.style.display = 'flex';
+      setTimeout(() => { chatInput.focus(); }, 200);
+    };
+    closeBtn.onclick = () => {
+      modal.style.display = 'none';
+    };
+    window.addEventListener('click', function(e) {
+      if (modal.style.display === 'flex' && !modal.contains(e.target) && e.target !== openBtn) {
+        modal.style.display = 'none';
+      }
+    });
+
+    chatUserSelect.addEventListener('change', openSocketIfReady);
+
+    // Si solo hay un destinatario (por ejemplo, cajero), seleccionarlo automáticamente
+    if (chatUserSelect.options.length === 2) {
+      chatUserSelect.selectedIndex = 1;
+      openSocketIfReady();
+    }
+
+    chatForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      console.log('submit chat');
+      if (socket && destinatarioId && chatInput.value.trim()) {
+        socket.send(JSON.stringify({
+          mensaje: chatInput.value,
+          imagen: null
+        }));
+        chatInput.value = '';
+      }
+    });
+  }
+});
+</script>
 </body>
 </html>

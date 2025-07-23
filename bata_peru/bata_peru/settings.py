@@ -4,14 +4,52 @@ import os
 # Definir BASE_DIR antes de usarlo
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# STATIC_ROOT debe ir después de BASE_DIR
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Definir BASE_DIR antes de usarlo
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# STATIC_ROOT debe ir después de BASE_DIR
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# --- Configuración Channels para WebSocket local ---
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+from pathlib import Path
+import os
+
+# Definir BASE_DIR antes de usarlo
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Configuración de archivos estáticos y medios
+from pathlib import Path
+import os
+
+# Definir BASE_DIR antes de usarlo
+BASE_DIR = Path(__file__).resolve().parent.parent
+
 # Configuración de archivos estáticos y medios
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+LOGIN_URL = '/login/'
 # Resto de la configuración
 SECRET_KEY = 'django-insecure-_akmxo)aw)&*v*8vr_qf$rwf8bjjs(a&*-9*pi&&mmsl2d-a_z'
 DEBUG = True
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+    'afdadd7e4551.ngrok-free.app',
+]
+
+# Permitir CSRF desde el dominio de ngrok
+CSRF_TRUSTED_ORIGINS = [
+    'https://afdadd7e4551.ngrok-free.app',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -21,9 +59,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'inventario',
-    'users',
-    'ventas',
+    'bata_peru.inventario',
+    'bata_peru.users',
+    'bata_peru.ventas',
     'tailwind',
 ]
 
@@ -31,6 +69,7 @@ ASGI_APPLICATION = 'bata_peru.asgi.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -39,7 +78,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'bata_peru.urls'
+ROOT_URLCONF = 'bata_peru.bata_peru.urls'
 
 TEMPLATES = [
     {
@@ -52,18 +91,23 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'bata_peru.context_processors.admin_user_context',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'bata_peru.wsgi.application'
+WSGI_APPLICATION = 'bata_peru.bata_peru.wsgi.application'
 
-# Base de datos SQLite
+# Base de datos Postgress
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # Esto indica la base de datos SQLite
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dockerproject',
+        'USER': 'myuser',
+        'PASSWORD': 'mypassword',
+        'HOST': 'localhost',  
+        'PORT': '5432',  
     }
 }
 
@@ -94,4 +138,5 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",  
 ]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

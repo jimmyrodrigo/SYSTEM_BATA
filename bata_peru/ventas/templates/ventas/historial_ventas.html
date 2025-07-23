@@ -1,81 +1,313 @@
 {% extends "ventas/base_dashboard.html" %}
+{% load static %}
 {% load tz %}
+{% load querystring %}
 {% block title %}Historial de Ventas{% endblock %}
-
 {% block content %}
-<h2 class="text-2xl font-bold mb-6">📜 Historial de Ventas</h2>
+<link rel="stylesheet" href="{% static 'css/historial.css' %}" />
+<div class="historial-container">
+  <h2 class="historial-title" style="display:flex;align-items:center;gap:12px;">
+    <svg width="36" height="36" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;">
+      <rect x="4" y="8" width="40" height="32" rx="6" fill="#FFD600" stroke="#181A20" stroke-width="2"/>
+      <rect x="10" y="14" width="28" height="4" rx="2" fill="#181A20"/>
+      <rect x="10" y="22" width="20" height="3" rx="1.5" fill="#B0B3B8"/>
+      <rect x="10" y="28" width="16" height="3" rx="1.5" fill="#B0B3B8"/>
+      <rect x="10" y="34" width="12" height="3" rx="1.5" fill="#B0B3B8"/>
+      <rect x="34" y="28" width="4" height="9" rx="2" fill="#181A20"/>
+    </svg>
+    Historial de Ventas
+  </h2>
+  <form method="GET" class="historial-form">
+    <div>
+      <label>Desde:</label>
+      <input type="date" name="fecha_inicio" value="{{ request.GET.fecha_inicio }}">
+    </div>
+    <div>
+      <label>Hasta:</label>
+      <input type="date" name="fecha_fin" value="{{ request.GET.fecha_fin }}">
+    </div>
+    <div>
+      <label>Estado:</label>
+      <select name="estado">
+        <option value="">Todos</option>
+        <option value="activa" {% if request.GET.estado == "activa" %}selected{% endif %}>Activas</option>
+        <option value="anulada" {% if request.GET.estado == "anulada" %}selected{% endif %}>Anuladas</option>
+      </select>
+    </div>
+    <div>
+      <label>Tipo de Pago:</label>
+      <select name="tipo_pago">
+        <option value="">Todos</option>
+        {% for key, label in venta.TIPO_PAGO_CHOICES %}
+          <option value="{{ key }}" {% if request.GET.tipo_pago == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Tipo Documento:</label>
+      <select name="tipo_documento">
+        <option value="">Todos</option>
+        {% for key, label in venta.TIPO_DOCUMENTO_CHOICES %}
+          <option value="{{ key }}" {% if request.GET.tipo_documento == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>N° Documento:</label>
+      <input type="text" name="documento_cliente" value="{{ request.GET.documento_cliente }}" placeholder="DNI, RUC, etc.">
+    </div>
+    <div>
+      <label>Producto:</label>
+      <select name="producto_id">
+        <option value="">Todos</option>
+        {% for producto in productos %}
+          <option value="{{ producto.id }}" {% if request.GET.producto_id == producto.id|stringformat:'s' %}selected{% endif %}>{{ producto.nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Talla:</label>
+      <select name="talla">
+        <option value="">Todas</option>
+        {% for t in tallas %}
+          <option value="{{ t }}" {% if request.GET.talla == t %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Color:</label>
+      <select name="color">
+        <option value="">Todos</option>
+        {% for c in colores %}
+          <option value="{{ c }}" {% if request.GET.color == c %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label>Cantidad Producto:</label>
+      <input type="number" name="cantidad_producto" min="1" value="{{ request.GET.cantidad_producto }}" placeholder="Ej: 2">
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button type="submit" class="historial-btn">🔍 Filtrar</button>
+      <a href="?{% querystring request export='pdf' %}" class="historial-export">📄 PDF</a>
+      <a href="?{% querystring request export='xml' %}" download="ventas.xml" class="historial-export">🗂 XML</a>
+    </div>
+  </form>
+  <table class="historial-table">
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Producto(s)</th>
+        <th>Cant.</th>
+        <th>Pago</th>
+        <th>Total</th>
+        <th>Vuelto</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for venta in ventas %}
+      <tr class="{% if venta.anulada %}anulada{% endif %}">
+        <td>
+          {% if venta.tipo_comprobante == "factura" and venta.razon_social %}
+            {{ venta.razon_social }}
+          {% else %}
+            {{ venta.nombres_cliente }} {{ venta.apellidos_cliente }}
+          {% endif %}
+          <br>
+          <small style="color:#888;">{{ venta.tipo_documento|upper }}: {{ venta.documento_cliente }}</small>
+        </td>
+        <td>
+          <ul style="padding-left:16px;">
+            {% for item in venta.detalleventa_set.all %}
+              <li>{{ item.producto.nombre }}</li>
+            {% endfor %}
+          </ul>
+        </td>
+        <td>
+          <ul style="padding-left:8px;">
+            {% for item in venta.detalleventa_set.all %}
+              <li>{{ item.cantidad }}</li>
+            {% endfor %}
+          </ul>
+        </td>
+        <td>{{ venta.get_tipo_pago_display }}</td>
+        <td>S/ {{ venta.total|floatformat:2 }}</td>
+        <td>S/ {{ venta.vuelto|floatformat:2 }}</td>
+        <td>{{ venta.fecha|localtime|date:"Y-m-d H:i" }}</td>
+        <td>
+          {% if not venta.anulada %}
+            <form method="POST" action="{% url 'solicitar_anulacion_venta' venta.id %}">
+              {% csrf_token %}
+              <button type="submit" style="color:#FF3B3B;font-weight:700;background:none;border:none;cursor:pointer;">Anular</button>
+            </form>
+          {% else %}
+            <span class="estado-anulada">Anulada</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="8" style="padding:24px;text-align:center;color:#888;">No hay ventas registradas con estos criterios.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-<!-- FILTROS -->
-<form method="GET" class="mb-6 bg-white p-4 rounded shadow flex flex-col md:flex-row items-end md:items-center gap-4">
-  <div>
-    <label class="block text-sm font-medium text-gray-600">Desde:</label>
-    <input type="date" name="fecha_inicio" value="{{ request.GET.fecha_inicio }}" class="border rounded px-2 py-1 w-full">
+  <!-- Sección de Gráficos Modernos -->
+  <div class="dashboard-analytics">
+    <div class="dashboard-charts-row dashboard-charts-align">
+      <div class="dashboard-chart-card dashboard-chart-left">
+        <h3 class="dashboard-chart-title">Ventas por Mes</h3>
+        <canvas id="ventasBarChart" width="340" height="180"></canvas>
+      </div>
+      <div class="dashboard-chart-card dashboard-chart-right" style="position:relative;">
+      <h3 class="dashboard-chart-title">Distribución de Ventas</h3>
+      <div style="position:relative;display:flex;justify-content:center;align-items:center;">
+        <canvas id="ventasDonutChart" width="180" height="180"></canvas>
+      </div>
+        <div class="dashboard-legend">
+          <span class="legend-color legend-activa"></span> Activas
+          <span class="legend-color legend-anulada"></span> Anuladas
+          <span class="legend-color legend-efectivo"></span> Efectivo
+          <span class="legend-color legend-tarjeta"></span> Tarjeta
+        </div>
+      </div>
+    </div>
   </div>
-  <div>
-    <label class="block text-sm font-medium text-gray-600">Hasta:</label>
-    <input type="date" name="fecha_fin" value="{{ request.GET.fecha_fin }}" class="border rounded px-2 py-1 w-full">
-  </div>
-  <div>
-    <label class="block text-sm font-medium text-gray-600">Estado:</label>
-    <select name="estado" class="border rounded px-2 py-1 w-full">
-      <option value="">Todos</option>
-      <option value="activa" {% if request.GET.estado == "activa" %}selected{% endif %}>Activas</option>
-      <option value="anulada" {% if request.GET.estado == "anulada" %}selected{% endif %}>Anuladas</option>
-    </select>
-  </div>
-  <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-    🔍 Filtrar
-  </button>
-</form>
+</div>
 
-<!-- TABLA -->
-<table class="w-full bg-white shadow rounded overflow-hidden text-sm">
-  <thead class="bg-blue-100 text-left">
-    <tr>
-      <th class="p-3">Producto(s)</th>
-      <th class="p-3">Cantidad(es)</th>
-      <th class="p-3">Pago</th>
-      <th class="p-3">Fecha</th>
-      <th class="p-3">Total</th>
-      <th class="p-3">Estado</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for venta in ventas %}
-    <tr class="border-t hover:bg-gray-50 {% if venta.anulada %}bg-gray-100 text-gray-400 line-through{% endif %}">
-      <td class="p-3">
-        <ul class="list-disc pl-4">
-          {% for item in venta.detalleventa_set.all %}
-            <li>{{ item.producto.nombre }}</li>
-          {% endfor %}
-        </ul>
-      </td>
-      <td class="p-3">
-        <ul class="pl-2">
-          {% for item in venta.detalleventa_set.all %}
-            <li>{{ item.cantidad }}</li>
-          {% endfor %}
-        </ul>
-      </td>
-      <td class="p-3">{{ venta.get_tipo_pago_display }}</td>
-      <td class="p-3">{{ venta.fecha|localtime|date:"Y-m-d H:i" }}</td>
-      <td class="p-3">S/ {{ venta.total|floatformat:2 }}</td>
-      <td class="p-3">
-        {% if not venta.anulada %}
-          <form method="POST" action="{% url 'anular_venta' venta.id %}">
-            {% csrf_token %}
-            <button type="submit" class="text-sm text-red-600 hover:underline">Anular</button>
-          </form>
-        {% else %}
-          <span class="italic">Anulada</span>
-        {% endif %}
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="6" class="p-4 text-center text-gray-500">Aún no tienes ventas registradas.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Datos desde Django (si no hay datos, usar arrays vacíos para evitar errores JS)
+const ventasPorMes = {{ ventas_por_mes|default:'[]'|safe }};
+const mesesLabels = {{ meses_labels|default:'[]'|safe }};
+const ventasDistribucion = {{ ventas_distribucion|default:'[]'|safe }};
+
+// Gráfico de Barras
+const ctxBar = document.getElementById('ventasBarChart').getContext('2d');
+new Chart(ctxBar, {
+  type: 'bar',
+  data: {
+    labels: mesesLabels,
+    datasets: [{
+      label: 'Ventas',
+      data: ventasPorMes,
+      backgroundColor: '#6C63FF',
+      borderRadius: 8,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true } }
+  }
+});
+
+// Gráfico Donut
+const ctxDonut = document.getElementById('ventasDonutChart').getContext('2d');
+const donutChart = new Chart(ctxDonut, {
+  type: 'doughnut',
+  data: {
+    labels: ['Activas', 'Anuladas', 'Efectivo', 'Tarjeta'],
+    datasets: [{
+      data: ventasDistribucion,
+      backgroundColor: [
+        '#4CAF50', // Activas
+        '#FF3B3B', // Anuladas
+        '#FFD600', // Efectivo
+        '#2196F3'  // Tarjeta
+      ],
+      borderWidth: 2
+    }]
+  },
+  options: {
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true },
+    },
+    cutout: '75%',
+    responsive: false,
+  }
+});
+</script>
+
+<!-- Estilos extra para los gráficos y leyendas -->
+<style>
+
+.dashboard-analytics {
+  margin-top: 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  padding: 18px 12px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.dashboard-charts-row {
+  display: flex;
+  gap: 32px;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+.dashboard-chart-card {
+  flex: 1 1 340px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 18px 16px 12px 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  min-width: 260px;
+  max-width: 400px;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.dashboard-chart-left {
+  align-items: flex-start;
+}
+.dashboard-chart-right {
+  align-items: flex-end;
+}
+.dashboard-chart-title {
+  font-size: 1.08rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #181A20;
+  text-align: left;
+  width: 100%;
+}
+.dashboard-legend {
+  margin-top: 12px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 0.98rem;
+  justify-content: center;
+}
+.legend-color {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.legend-activa { background: #4CAF50; }
+.legend-anulada { background: #FF3B3B; }
+.legend-efectivo { background: #FFD600; }
+.legend-tarjeta { background: #2196F3; }
+
+#ventasBarChart {
+  max-width: 340px;
+  max-height: 180px;
+}
+#ventasDonutChart {
+  max-width: 180px;
+  max-height: 180px;
+}
+</style>
 {% endblock %}

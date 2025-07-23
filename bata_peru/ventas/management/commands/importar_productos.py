@@ -3,11 +3,12 @@ import random
 from datetime import datetime, timedelta
 from django.core.files import File
 from django.core.management.base import BaseCommand
-from inventario.models import Producto, Categoria, Subcategoria
 from pathlib import Path
+from bata_peru.inventario.models import Producto, Categoria, Subcategoria
+
 
 class Command(BaseCommand):
-    help = 'Importa productos desde un archivo CSV con cantidad incluida y fecha de ingreso aleatoria'
+    help = 'Importa productos desde un archivo CSV con cantidad incluida, fecha de ingreso aleatoria y talla'
 
     def handle(self, *args, **kwargs):
         path_csv = 'catalogo_bata_completo.csv'  # Ruta del archivo CSV
@@ -34,6 +35,9 @@ class Command(BaseCommand):
                 # Generar fecha aleatoria entre 10 y 20 de abril de 2025
                 fecha_random = datetime(2025, 4, 10) + timedelta(days=random.randint(0, 10))
 
+                # Leer talla directamente del CSV (puede ser '' o None)
+                talla = row.get('talla', '').strip() or None
+
                 # Crear o actualizar el producto
                 producto, creado = Producto.objects.update_or_create(
                     nombre=row['nombre'].strip(),
@@ -45,6 +49,7 @@ class Command(BaseCommand):
                         'precio': row['precio'],
                         'cantidad': int(row['cantidad']),
                         'fecha_ingreso': fecha_random,
+                        'talla': talla,
                     }
                 )
 
@@ -54,4 +59,4 @@ class Command(BaseCommand):
                         producto.imagen.save(imagen_path.name, File(img_file), save=True)
 
                 mensaje = "✅ Agregado" if creado else "🔄 Actualizado"
-                self.stdout.write(self.style.SUCCESS(f"{mensaje}: {producto.nombre} | ID {producto.id} | Fecha {producto.fecha_ingreso.strftime('%Y-%m-%d')}"))
+                self.stdout.write(self.style.SUCCESS(f"{mensaje}: {producto.nombre} | ID {producto.id} | Fecha {producto.fecha_ingreso.strftime('%Y-%m-%d')} | Talla: {producto.talla}"))

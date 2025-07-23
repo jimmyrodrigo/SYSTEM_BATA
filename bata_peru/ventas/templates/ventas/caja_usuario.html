@@ -1,57 +1,241 @@
+
 {% extends 'ventas/base_dashboard.html' %}
+{% load static %}
+
 {% block title %}Caja del Cajero{% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
-  <h2 class="text-2xl font-bold text-red-600 mb-4">💵 Control de Caja</h2>
+<link rel="stylesheet" href="{% static 'css/caja.css' %}" />
+<div class="caja-main-wrapper">
+  <div class="caja-card-centered">
+    <h2 class="caja-title mb-4 text-center">
+      <span style="vertical-align:middle;">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:8px;vertical-align:middle;">
+          <rect x="2" y="6" width="28" height="20" rx="5" fill="#FFD600" stroke="#181A20" stroke-width="2"/>
+          <rect x="8" y="12" width="16" height="3" rx="1.5" fill="#181A20"/>
+          <rect x="8" y="17" width="10" height="2" rx="1" fill="#B0B3B8"/>
+          <circle cx="24" cy="20" r="2" fill="#FF3B3B"/>
+        </svg>
+      </span>
+      Control de Caja
+    </h2>
 
-  {% if messages %}
-    <div class="space-y-2 mb-4">
-      {% for message in messages %}
-        <div class="bg-{{ message.tags }}-100 text-{{ message.tags }}-700 p-3 rounded shadow">
-          {{ message }}
-        </div>
-      {% endfor %}
-    </div>
+  <!-- Mensajes dinámicos -->
+  <div id="message-container">
+    {% if messages %}
+      <div class="space-y-2 mb-4">
+        {% for message in messages %}
+          <div class="caja-alert caja-alert-{{ message.tags }}">
+            {% if message.tags == 'success' %}
+              <span style="vertical-align:middle;"><svg width='20' height='20' viewBox='0 0 20 20' fill='none'><circle cx='10' cy='10' r='10' fill='#FFD600'/><path d='M6 10l3 3 5-5' stroke='#181A20' stroke-width='2' fill='none'/></svg></span>
+            {% elif message.tags == 'error' %}
+              <span style="vertical-align:middle;"><svg width='20' height='20' viewBox='0 0 20 20' fill='none'><circle cx='10' cy='10' r='10' fill='#FF3B3B'/><path d='M6 6l8 8M14 6l-8 8' stroke='#fff' stroke-width='2' fill='none'/></svg></span>
+            {% else %}
+              <span style="vertical-align:middle;"><svg width='20' height='20' viewBox='0 0 20 20' fill='none'><circle cx='10' cy='10' r='10' fill='#B0B3B8'/><text x='10' y='15' text-anchor='middle' font-size='12' fill='#23252B'>i</text></svg></span>
+            {% endif %}
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  {% if not caja_abierta %}
+    {% if not solicitud_apertura %}
+    <form method="POST" id="form-apertura-caja" class="caja-form">
+      {% csrf_token %}
+      <input type="hidden" name="accion" value="solicitar_apertura">
+      <label>Monto inicial:</label>
+      <input type="number" name="monto_inicial" step="0.01" min="0" required placeholder="Monto inicial">
+
+      <label>Comentario:</label>
+      <textarea name="comentario" placeholder="Escribe tu comentario aquí"></textarea>
+
+      <button type="submit" class="caja-btn">
+        <span style="vertical-align:middle;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="5" width="16" height="10" rx="3" fill="#FFD600" stroke="#181A20" stroke-width="1.5"/>
+            <rect x="6" y="9" width="8" height="1.5" rx="0.75" fill="#181A20"/>
+            <circle cx="15" cy="13" r="1.2" fill="#FF3B3B"/>
+            <path d="M10 2v4" stroke="#181A20" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+        Solicitar Apertura de Caja
+      </button>
+    </form>
+    {% else %}
+      <p class="text-gray-600">Tu solicitud de apertura de caja está en espera de aprobación.</p>
+    {% endif %}
   {% endif %}
 
-  {% if not caja_abierta and not caja_cerrada %}
-    <!-- Apertura de caja -->
-    <form method="POST">
-      {% csrf_token %}
-      <input type="hidden" name="accion" value="abrir">
-      <label class="block font-medium">Monto inicial:</label>
-      <input type="number" name="monto_inicial" step="0.01" min="0" required
-             class="w-full p-2 border rounded mb-4">
-      <button type="submit"
-              class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
-        🔓 Abrir Caja
-      </button>
-    </form>
-
-  {% elif caja_abierta %}
-    <!-- Caja abierta -->
+  {% if caja_abierta %}
+    <p class="mb-2"><strong>Usuario:</strong> {{ caja_abierta.usuario.username }}</p>
     <p><strong>Fecha de apertura:</strong> {{ caja_abierta.fecha_apertura|date:"d/m/Y H:i" }}</p>
     <p><strong>Monto inicial:</strong> S/ {{ caja_abierta.saldo_inicial|floatformat:2 }}</p>
-    <p><strong>Ingresos (ventas):</strong> S/ {{ caja_abierta.ingresos|floatformat:2 }}</p>
+    <p><strong>Ingresos:</strong> S/ {{ caja_abierta.ingresos|floatformat:2 }}</p>
     <p><strong>Total en caja:</strong> S/ {{ caja_abierta.saldo_final|floatformat:2 }}</p>
 
-    <form method="POST" class="mt-4">
+    <form method="POST" id="form-cerrar-caja" class="caja-form">
       {% csrf_token %}
-      <input type="hidden" name="accion" value="cerrar">
-      <button type="submit"
-              class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">
-        🔒 Cerrar Caja
+      <input type="hidden" name="accion" value="solicitar_cierre">
+      <label>Comentario (opcional):</label>
+      <textarea name="comentario" placeholder="Algo que quieras anotar..."></textarea>
+      <button type="submit" class="caja-btn">
+        <span style="vertical-align:middle;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="5" width="16" height="10" rx="3" fill="#FFD600" stroke="#181A20" stroke-width="1.5"/>
+            <rect x="6" y="9" width="8" height="1.5" rx="0.75" fill="#181A20"/>
+            <circle cx="15" cy="13" r="1.2" fill="#FF3B3B"/>
+            <path d="M10 2v4" stroke="#FF3B3B" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </span>
+        Solicitar Cierre de Caja
       </button>
     </form>
 
+    <!-- Aquí se mostrará la respuesta sin recargar -->
+    <div id="caja-usuario" class="mt-4 text-sm text-gray-700"></div>
   {% elif caja_cerrada %}
-    <!-- Caja cerrada -->
     <div class="text-center">
-      <p class="text-green-700 font-semibold">La caja ya fue cerrada hoy.</p>
+      <p class="text-green-700 font-semibold">✅ La caja ya fue cerrada hoy.</p>
       <p><strong>Fecha cierre:</strong> {{ caja_cerrada.fecha_cierre|date:"d/m/Y H:i" }}</p>
       <p><strong>Total final:</strong> S/ {{ caja_cerrada.saldo_final|floatformat:2 }}</p>
     </div>
   {% endif %}
 </div>
+
+<!-- JS para procesar sin recargar -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+  $(document).on('submit', '#form-cerrar-caja', function(e) {
+    e.preventDefault();
+    var data = $(this).serialize();
+
+    $.ajax({
+      type: 'POST',
+      url: "{% url 'caja_usuario' %}",
+      data: data,
+      headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+      success: function(response) {
+        const color = response.status === 'success' ? 'green' : 'red';
+        $('#message-container').html(`
+          <div style="display:flex;align-items:center;gap:8px;" class="bg-${color}-100 text-${color}-700 p-3 rounded shadow mb-3">
+            <span style="vertical-align:middle;">
+              ${color === 'green' ? `<svg width='20' height='20' viewBox='0 0 20 20' fill='none'><circle cx='10' cy='10' r='10' fill='#FFD600'/><path d='M6 10l3 3 5-5' stroke='#181A20' stroke-width='2' fill='none'/></svg>` : `<svg width='20' height='20' viewBox='0 0 20 20' fill='none'><circle cx='10' cy='10' r='10' fill='#FF3B3B'/><path d='M6 6l8 8M14 6l-8 8' stroke='#fff' stroke-width='2' fill='none'/></svg>`}
+            </span>
+            <span>${response.message}</span>
+          </div>
+        `);
+
+        if (response.status === 'success' && response.solicitud_cierre) {
+          $('#form-cerrar-caja').remove();
+          $('#caja-usuario').html(`
+            <div class="bg-yellow-50 p-4 border border-yellow-300 rounded">
+              <p><strong>Solicitud enviada por:</strong> ${response.solicitud_cierre.usuario}</p>
+              <p><strong>Fecha de solicitud:</strong> ${response.solicitud_cierre.fecha_solicitud}</p>
+              <p><strong>Comentario:</strong> ${response.solicitud_cierre.comentario || '—'}</p>
+              <p class="mt-2 text-yellow-700">⏳ En espera de aprobación del administrador...</p>
+            </div>
+          `);
+        }
+      },
+      error: function() {
+      $('#message-container').html(`<div style="display:flex;align-items:center;gap:8px;" class="bg-red-100 text-red-700 p-3 rounded shadow">
+        <span style="vertical-align:middle;"><svg width='20' height='20' viewBox='0 0 20 20' fill='none'><circle cx='10' cy='10' r='10' fill='#FF3B3B'/><path d='M6 6l8 8M14 6l-8 8' stroke='#fff' stroke-width='2' fill='none'/></svg></span>
+        <span>Error. Intenta nuevamente.</span>
+      </div>`);
+      }
+    });
+  });
+});
+$(document).on('submit', '#form-apertura-caja', function(e) {
+  e.preventDefault();
+  var data = $(this).serialize();
+
+  $.ajax({
+    type: 'POST',
+    url: "{% url 'caja_usuario' %}",
+    data: data,
+    headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+    success: function(response) {
+      const color = response.status === 'success' ? 'green' : 'red';
+      $('#message-container').html(`
+        <div style="display:flex;align-items:center;gap:8px;" class="bg-${color}-100 text-${color}-700 p-3 rounded shadow mb-3">
+          <span style="vertical-align:middle;">
+            ${color === 'green' ? `<svg width='20' height='20' viewBox='0 0 20 20' fill='none'><circle cx='10' cy='10' r='10' fill='#FFD600'/><path d='M6 10l3 3 5-5' stroke='#181A20' stroke-width='2' fill='none'/></svg>` : `<svg width='20' height='20' viewBox='0 0 20 20' fill='none'><circle cx='10' cy='10' r='10' fill='#FF3B3B'/><path d='M6 6l8 8M14 6l-8 8' stroke='#fff' stroke-width='2' fill='none'/></svg>`}
+          </span>
+          <span>${response.message}</span>
+        </div>
+      `);
+
+      if (response.status === 'success' && response.solicitud_apertura) {
+        $('#form-apertura-caja').remove();
+        $('#message-container').append(`
+          <div class="bg-yellow-50 p-4 border border-yellow-300 rounded mt-4">
+            <p><strong>Solicitud enviada por:</strong> ${response.solicitud_apertura.usuario}</p>
+            <p><strong>Fecha de solicitud:</strong> ${response.solicitud_apertura.fecha_solicitud}</p>
+            <p><strong>Monto inicial:</strong> S/ ${parseFloat(response.solicitud_apertura.monto_inicial).toFixed(2)}</p>
+            <p><strong>Comentario:</strong> ${response.solicitud_apertura.comentario || '—'}</p>
+            <p class="mt-2 text-yellow-700">⏳ Esperando aprobación del administrador...</p>
+          </div>
+        `);
+      }
+    },
+    error: function() {
+      $('#message-container').html(`<div style="display:flex;align-items:center;gap:8px;" class="bg-red-100 text-red-700 p-3 rounded shadow">
+        <span style="vertical-align:middle;"><svg width='20' height='20' viewBox='0 0 20 20' fill='none'><circle cx='10' cy='10' r='10' fill='#FF3B3B'/><path d='M6 6l8 8M14 6l-8 8' stroke='#fff' stroke-width='2' fill='none'/></svg></span>
+        <span>Error al solicitar apertura. Intenta nuevamente.</span>
+      </div>`);
+    }
+  });
+});
+
+</script>
+<script>
+  // --- WebSocket para notificaciones de caja ---
+  let mensajeMostrado = false;
+
+  function mostrarNotificacionCaja(tipo, mensaje) {
+    const color = tipo === 'aprobada' ? 'green' : 'red';
+    const icon = color === 'green'
+      ? `<svg width='20' height='20' viewBox='0 0 20 20' fill='none'><circle cx='10' cy='10' r='10' fill='#FFD600'/><path d='M6 10l3 3 5-5' stroke='#181A20' stroke-width='2' fill='none'/></svg>`
+      : `<svg width='20' height='20' viewBox='0 0 20 20' fill='none'><circle cx='10' cy='10' r='10' fill='#FF3B3B'/><path d='M6 6l8 8M14 6l-8 8' stroke='#fff' stroke-width='2' fill='none'/></svg>`;
+    $('#message-container').html(`
+      <div style="display:flex;align-items:center;gap:8px;" class="bg-${color}-100 text-${color}-700 p-4 rounded shadow">
+        <span style="vertical-align:middle;">${icon}</span>
+        <span>${mensaje}</span>
+      </div>
+    `);
+    setTimeout(() => location.reload(), 2000);
+  }
+
+  $(document).ready(function () {
+    // El WebSocket SIEMPRE se conecta para recibir notificaciones en tiempo real
+    let ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+    let ws_path = ws_scheme + '://' + window.location.host + '/ws/notificaciones_caja/';
+    let socket = new WebSocket(ws_path);
+
+    socket.onmessage = function(event) {
+      let data = {};
+      try { data = JSON.parse(event.data); } catch (e) { return; }
+      if (data.tipo === 'aprobada') {
+        if (!mensajeMostrado) {
+          mensajeMostrado = true;
+          mostrarNotificacionCaja('aprobada', 'Tu solicitud fue <strong>aprobada</strong>. ¡Ya puedes usar la caja!');
+          setTimeout(() => location.reload(), 2000);
+        }
+      } else if (data.tipo === 'rechazada') {
+        // SIEMPRE mostrar el mensaje y recargar, aunque ya se haya mostrado antes
+        mostrarNotificacionCaja('rechazada', 'Tu solicitud fue <strong>rechazada</strong> por el administrador.<br>Si consideras que esto fue un error, por favor comunícate con él.');
+        setTimeout(() => location.reload(), 2000);
+      }
+    };
+
+    socket.onerror = function() {
+      // Opcional: mostrar error de conexión WebSocket
+    };
+  });
+</script>
+
 {% endblock %}

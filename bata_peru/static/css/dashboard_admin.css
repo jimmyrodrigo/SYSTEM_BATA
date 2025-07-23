@@ -1,0 +1,91 @@
+/* Animación de entrada para las cards */
+.dashboard-admin-card {
+  animation: fadeInUp 0.7s cubic-bezier(.23,1.01,.32,1) both;
+}
+.dashboard-admin-card:nth-child(1) { animation-delay: 0.05s; }
+.dashboard-admin-card:nth-child(2) { animation-delay: 0.15s; }
+.dashboard-admin-card:nth-child(3) { animation-delay: 0.25s; }
+.dashboard-admin-card:nth-child(4) { animation-delay: 0.35s; }
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Animación para el badge de notificaciones */
+.dashboard-admin-badge {
+  animation: badgePulse 1.2s infinite;
+}
+@keyframes badgePulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,59,59,0.3); }
+  70% { box-shadow: 0 0 0 10px rgba(255,59,59,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,59,59,0); }
+}
+/* Estilos para dashboard_admin, siguiendo la paleta y minimalismo de catalogo.css */
+body.dashboard-admin {
+  background: #F7F7F7;
+  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+}
+.dashboard-admin-main {
+  max-width: 1300px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(32,32,32,0.08);
+  padding: 32px 24px;
+}
+.dashboard-admin-title {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #181A20;
+  margin-bottom: 32px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-left: 8px solid #FFD600;
+  padding-left: 18px;
+}
+.dashboard-admin-card {
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(32,32,32,0.07);
+  background: linear-gradient(120deg, #FFD600 0%, #FFF7D6 100%);
+  padding: 24px 18px;
+  margin-bottom: 24px;
+  transition: box-shadow 0.2s;
+}
+.dashboard-admin-card-blue {
+  background: linear-gradient(120deg, #3B82F6 0%, #60A5FA 100%);
+  color: #fff;
+}
+.dashboard-admin-card-green {
+  background: linear-gradient(120deg, #22C55E 0%, #4ADE80 100%);
+  color: #fff;
+}
+.dashboard-admin-card-yellow {
+  background: linear-gradient(120deg, #FFD600 0%, #FFF7D6 100%);
+  color: #23252B;
+}
+.dashboard-admin-card-red {
+  background: linear-gradient(120deg, #EF4444 0%, #FCA5A5 100%);
+  color: #fff;
+}
+.dashboard-admin-card:hover {
+  box-shadow: 0 4px 24px rgba(32,32,32,0.13);
+}
+.dashboard-admin-badge {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  background: #FF3B3B;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 6px 18px;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(255,59,59,0.13);
+  animation: pulse 1.2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,59,59,0.3); }
+  70% { box-shadow: 0 0 0 10px rgba(255,59,59,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,59,59,0); }
+}

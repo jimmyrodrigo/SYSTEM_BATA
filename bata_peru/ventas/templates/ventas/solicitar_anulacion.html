@@ -1,0 +1,24 @@
+{% extends "ventas/base_dashboard.html" %}
+{% load static %}
+{% block title %}Solicitud de Anulación{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/anulacion.css' %}" />
+<div class="anulacion-container">
+  <h2 class="anulacion-title">
+    <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:10px;">
+      <rect x="4" y="8" width="40" height="32" rx="6" fill="#FFD600" stroke="#181A20" stroke-width="2"/>
+      <path d="M16 20 L32 36" stroke="#FF3B3B" stroke-width="3" stroke-linecap="round"/>
+      <path d="M32 20 L16 36" stroke="#FF3B3B" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    Solicitar anulación para la venta #{{ venta.id }}
+  </h2>
+  <form method="POST" class="anulacion-form">
+    {% csrf_token %}
+    <label for="comentario" class="anulacion-label">Comentario:</label>
+    <textarea name="comentario" id="comentario" rows="4" class="anulacion-textarea" required></textarea>
+    <button type="submit" class="anulacion-btn">Enviar solicitud</button>
+  </form>
+  <a href="{% url 'historial_ventas' %}" class="anulacion-link">Volver al historial de ventas</a>
+</div>
+{% endblock %}
